@@ -1,11 +1,36 @@
 ---
-// Henter parametrene fra Astro.props
-const { teksttype="brødtekst", stylingclasses=""} = Astro.props; 
- 
-//Definer den styling (Tailwind classes), der gør sig gældende for de forskellige størrelser.
-const sizeClasses = {
-"konsultativ": "text-sm text-italic",
-"brødtekst": "text-xl my-4",
+import type { HTMLAttributes } from "astro/types";
+
+const textClasses = {
+  p_small_reg: "text-[13px] font-normal leading-relaxed",
+  p_base_reg: "text-[14px] font-normal leading-relaxed",
+  p_base_med: "text-[14px] font-medium leading-relaxed",
+  p_large_reg: "text-[16px] font-normal leading-relaxed",
+  p_large_med: "text-[16px] font-medium leading-relaxed",
+  brand_label: "text-[18px] font-semibold leading-none",
+  brødtekst: "text-[14px] font-normal leading-relaxed",
+  konsultativ: "text-[13px] font-normal leading-relaxed",
 };
+
+interface Props extends HTMLAttributes<"span"> {
+  as?: "span" | "p";
+  teksttype?: keyof typeof textClasses;
+  stylingclasses?: string;
+}
+
+const { as = "span", teksttype = "p_base_reg",
+  stylingclasses, class: className, ...attributes } = Astro.props;
+const Tag = as;
 ---
-<p class:list={[sizeClasses[teksttype], stylingclasses]}><slot /></p>
+
+<Tag class:list={["text-style", textClasses[teksttype], stylingclasses, className]} {...attributes}>
+  <slot />
+</Tag>
+
+<style>
+  .text-style {
+    font-family: "Geist Mono", monospace;
+    color: inherit;
+  }
+
+</style>

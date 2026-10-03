@@ -1,0 +1,577 @@
+---
+interface Props {
+  video?: string;
+  image?: string;
+}
+const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png" } = Astro.props;
+---
+
+<div class="liquid-background" data-liquid-background data-video={video} aria-hidden="true" style={{ backgroundImage: `url("${image}")` }}>
+  <video src={video} poster={image} muted loop playsinline preload="metadata" tabindex="-1"></video>
+  <canvas></canvas>
+</div>
+
+<style>
+  .liquid-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: #eeeae4;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+  }
+  video,
+  canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  video {
+    object-fit: cover;
+    object-position: center;
+  }
+  canvas {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  import * as THREE from "three";
+
+  // Radius is measured in viewport heights; decay/smoothing are rates per second.
+  const DISTORTION_STRENGTH = 0.14;
+  const MOUSE_RADIUS = 0.22;
+  const AMBIENT_STRENGTH = 0.0025;
+  const CURSOR_SMOOTHING = 7;
+  const VELOCITY_DECAY = 3.5;
+  const CHROMATIC_ABERRATION_STRENGTH = 0.0012;
+  const FLOW_RESOLUTION = 256; // Longest side; independent of canvas pixel ratio.
+  const FLOW_DECAY = 0.65; // Lower values leave longer trails.
+  const FLOW_INJECTION = 2.8;
+  const FLOW_DIFFUSION = 2.2;
+
+  // Editorial finish: smear length is in viewport heights; grain is in CSS pixels.
+  const SMEAR_STRENGTH = 0.07;
+  const SMEAR_SAMPLES = 10; // Integer from 8–12; compiled into the shader loop.
+  const ADVECTION = 0.8;
+  const GRAIN_STRENGTH = 0.035;
+  const SOFTENING = 0.38;
+  const BLUR_RADIUS = 4.0; // Blur sampling radius in CSS pixels.
+  const SATURATION = 0.82;
+  const CONTRAST = 1.08;
+  const VIGNETTE = 0.07;
+  const GLOBAL_FLOW_STRENGTH = 0.55; // Ambient folds/smear across the entire image.
+  const GLOBAL_SOFTENING = 0.8; // Baseline share of SOFTENING, before cursor input.
+  const LOOP_CROSSFADE_SECONDS = 1.2; // Blend the ending into a preloaded restart.
+  const EDGE_ZOOM = 1.08; // Small overscan gives displacement room at image edges.
+
+  const vertexShader = /* glsl */ `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = vec4(position.xy, 0.0, 1.0);
+    }
+  `;
+  const flowShader = /* glsl */ `
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D uFlow;
+    uniform vec2 uTexel;
+    uniform vec2 uMetric;
+    uniform vec2 uMouse;
+    uniform vec2 uPreviousMouse;
+    uniform vec2 uVelocity;
+    uniform float uDt;
+    uniform float uRadius;
+    uniform float uDecay;
+    uniform float uInjection;
+    uniform float uDiffusion;
+    uniform float uAdvection;
+    void main() {
+      vec2 flow = texture2D(uFlow, vUv).rg;
+      // Advect the previous field along itself, then gently diffuse it.
+      // Only the vector field is fed back; the video is sampled fresh each frame.
+      vec2 travel = flow / uMetric * uDt * uAdvection;
+      // Bound each backtrace to two flow texels, even during long frames.
+      travel *= min(1.0, 2.0 / max(length(travel / uTexel), 0.00001));
+      vec2 uv = clamp(vUv - travel, uTexel * 0.5, 1.0 - uTexel * 0.5);
+      vec2 center = texture2D(uFlow, uv).rg;
+      vec2 neighbors = (texture2D(uFlow, uv + vec2(uTexel.x, 0.0)).rg
+                      + texture2D(uFlow, uv - vec2(uTexel.x, 0.0)).rg
+                      + texture2D(uFlow, uv + vec2(0.0, uTexel.y)).rg
+                      + texture2D(uFlow, uv - vec2(0.0, uTexel.y)).rg) * 0.25;
+      flow = mix(center, neighbors, 1.0 - exp(-uDiffusion * uDt));
+      flow *= exp(-uDecay * uDt);
+
+      // Stamp a soft capsule along the cursor path, avoiding gaps on fast moves.
+      vec2 segment = (uMouse - uPreviousMouse) * uMetric;
+      vec2 relative = (vUv - uPreviousMouse) * uMetric;
+      float t = clamp(dot(relative, segment) / max(dot(segment, segment), 0.00001), 0.0, 1.0);
+      vec2 distanceToPath = relative - segment * t;
+      float falloff = exp(-dot(distanceToPath, distanceToPath) / (uRadius * uRadius));
+      flow += uVelocity * falloff * uInjection * uDt;
+      flow /= max(1.0, length(flow) / 1.25);
+      gl_FragColor = vec4(flow, 0.0, 1.0);
+    }
+  `;
+  const fragmentShader = /* glsl */ `
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D uTexture;
+    uniform sampler2D uNextTexture;
+    uniform float uLoopBlend;
+    uniform sampler2D uFlow;
+    uniform vec2 uViewport;
+    uniform vec2 uImage;
+    uniform float uTime;
+    uniform float uStrength;
+    uniform float uAmbient;
+    uniform float uChromatic;
+    uniform float uSmear;
+    uniform float uGrain;
+    uniform float uSoftening;
+    uniform float uBlurRadius;
+    uniform float uSaturation;
+    uniform float uContrast;
+    uniform float uVignette;
+    uniform float uGlobalFlow;
+    uniform float uGlobalSoftening;
+    uniform float uEdgeZoom;
+
+    // Smooth value noise: a small, inexpensive non-periodic ambient flow field.
+    float hash(vec2 p) {
+      return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    }
+    float noise(vec2 p) {
+      vec2 cell = floor(p);
+      vec2 f = fract(p);
+      f = f * f * (3.0 - 2.0 * f);
+      return mix(mix(hash(cell), hash(cell + vec2(1.0, 0.0)), f.x),
+                 mix(hash(cell + vec2(0.0, 1.0)), hash(cell + vec2(1.0)), f.x), f.y);
+    }
+    // Video samples need explicit sRGB-to-linear conversion before output encoding.
+    vec3 sampleVideo(vec2 uv) {
+      vec3 c = texture2D(uTexture, uv).rgb;
+      // Only decode/sample the second video during the short loop transition.
+      if (uLoopBlend > 0.0) c = mix(c, texture2D(uNextTexture, uv).rgb, uLoopBlend);
+      return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c));
+    }
+    void main() {
+      float aspect = uViewport.x / uViewport.y;
+      vec2 metric = vec2(aspect, 1.0);
+      vec2 p = vUv * metric;
+      vec2 field = vec2(noise(p * 2.1 + vec2(uTime * 0.035, 4.7)),
+                        noise(p * 2.1 + vec2(9.2, -uTime * 0.028))) - 0.5;
+      // Broad, slowly changing vertical flow gives every region an analog smear.
+      // Cursor trails add directional folds on top of this full-image treatment.
+      vec2 ambientFlow = vec2(field.x * 0.7, 0.75 + field.y * 0.5) * uGlobalFlow;
+      vec2 flow = texture2D(uFlow, vUv).rg + ambientFlow;
+      float speed = min(length(flow), 1.0);
+      vec2 displacement = (field * uAmbient - flow * uStrength) / metric;
+
+      // Centered background-size: cover, calculated in source texture UV space.
+      float imageAspect = uImage.x / uImage.y;
+      vec2 cover = vec2(min(aspect / imageAspect, 1.0),
+                        min(imageAspect / aspect, 1.0)) / uEdgeZoom;
+      vec2 baseUv = (vUv - 0.5) * cover + 0.5;
+      vec2 offset = displacement * cover;
+      vec2 fringe = speed * uChromatic * flow / metric * cover;
+      vec2 smear = flow / metric * cover * uSmear;
+      vec2 blur = cover / uViewport * uBlurRadius * (1.0 + 2.0 * speed);
+      // Reserve room for every smear/blur/refraction tap. Without this, UVs
+      // outside the video repeat the last pixel row into a stretched edge band.
+      vec2 halfTexel = 0.5 / uImage;
+      vec2 available = max(min(baseUv - halfTexel, 1.0 - halfTexel - baseUv), vec2(0.0));
+      vec2 needed = abs(offset) + abs(smear) * 0.5 + abs(fringe) + blur;
+      vec2 ratio = available / max(needed, vec2(0.00001));
+      float edgeRoom = clamp(min(ratio.x, ratio.y), 0.0, 1.0);
+      // Ease deformation near edges; keep it within the safe sampling budget.
+      float edgeFade = edgeRoom * edgeRoom * (2.0 - edgeRoom);
+      offset *= edgeFade;
+      smear *= edgeFade;
+      fringe *= edgeFade;
+      blur *= edgeFade;
+      vec2 uv = baseUv + offset;
+      // Weighted directional smear across the image, stronger along cursor trails.
+      // One RGB lookup per tap keeps the cost below three full smear loops.
+      vec3 color = vec3(0.0);
+      float totalWeight = 0.0;
+      for (int i = 0; i < SMEAR_SAMPLES; i++) {
+        float t = float(i) / float(SMEAR_SAMPLES - 1) - 0.5;
+        float weight = exp(-t * t * 6.0);
+        color += sampleVideo(uv + smear * t) * weight;
+        totalWeight += weight;
+      }
+      color /= totalWeight;
+
+      // Light global softness, with extra softening around stronger distortions.
+      vec3 softened = (sampleVideo(uv + vec2(blur.x, 0.0))
+                      + sampleVideo(uv - vec2(blur.x, 0.0))
+                      + sampleVideo(uv + vec2(0.0, blur.y))
+                      + sampleVideo(uv - vec2(0.0, blur.y))) * 0.25;
+      float softness = uSoftening * mix(uGlobalSoftening, 1.0, speed);
+      color = mix(color, softened, clamp(softness, 0.0, 1.0));
+      // Add restrained refraction as a difference, preserving the smeared image.
+      vec3 center = sampleVideo(uv);
+      color.r += sampleVideo(uv + fringe).r - center.r;
+      color.b += sampleVideo(uv - fringe).b - center.b;
+      color = max(color, vec3(0.0));
+      gl_FragColor = vec4(color, 1.0);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+
+      // Grade and grain in display space so shadows don't amplify the noise.
+      color = gl_FragColor.rgb;
+      float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+      color = mix(vec3(luminance), color, uSaturation);
+      // Gentle contrast curve anchors black/white instead of clipping shadows.
+      color += (uContrast - 1.0) * (color - 0.5) * 4.0 * color * (1.0 - color);
+      float edge = smoothstep(0.15, 0.72, length(vUv - 0.5));
+      color *= 1.0 - uVignette * edge;
+      // Smooth coarse cells, with a new monochrome grain pattern at 24 fps.
+      float grainFrame = floor(uTime * 24.0);
+      vec2 grainUv = vUv * uViewport / 2.4;
+      float grain = noise(grainUv + vec2(grainFrame * 17.13, grainFrame * 7.71)) - 0.5;
+      float shadowProtection = smoothstep(0.0, 0.12, luminance);
+      color += grain * uGrain * shadowProtection;
+      gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+    }
+  `;
+
+  function mountBackground(element: HTMLElement) {
+    const canvas = element.querySelector("canvas")!;
+    const video = element.querySelector("video")!;
+    let activeVideo = video;
+    let incomingVideo: HTMLVideoElement | null = null;
+    let crossfading = false;
+    let startingFade = false;
+    let seamlessLoopAvailable = true;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!video.getAttribute("src")) video.src = element.dataset.video!;
+    video.muted = true;
+    function updatePlayback() {
+      video.style.visibility = motion.matches ? "hidden" : "visible";
+      if (motion.matches || document.hidden) {
+        activeVideo.pause();
+        incomingVideo?.pause();
+      } else {
+        void activeVideo.play().catch(() => {
+          /* Poster remains visible if autoplay is blocked. */
+        });
+        if (crossfading) void incomingVideo?.play().catch(() => {});
+      }
+    }
+    function stopPlayback() {
+      document.removeEventListener("visibilitychange", updatePlayback);
+      motion.removeEventListener("change", updatePlayback);
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      if (extraVideo) {
+        extraVideo.pause();
+        extraVideo.removeAttribute("src");
+        extraVideo.load();
+        extraVideo.remove();
+      }
+    }
+    let extraVideo: HTMLVideoElement | null = null;
+    document.addEventListener("visibilitychange", updatePlayback);
+    motion.addEventListener("change", updatePlayback);
+    updatePlayback();
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: "low-power" });
+    } catch {
+      return stopPlayback; // Native cover video remains visible without WebGL.
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    // Signed half-float flow avoids visible quantization as trails fade out.
+    if (!renderer.extensions.has("EXT_color_buffer_float")) {
+      renderer.dispose();
+      return stopPlayback;
+    }
+    const scene = new THREE.Scene();
+    const camera = new THREE.Camera();
+    const target = new THREE.Vector2(0.5, 0.5);
+    const mouse = target.clone();
+    const velocity = new THREE.Vector2();
+    const previous = mouse.clone();
+    const uniforms = {
+      uTexture: { value: null as THREE.Texture | null },
+      uNextTexture: { value: null as THREE.Texture | null },
+      uLoopBlend: { value: 0 },
+      uFlow: { value: null as THREE.Texture | null },
+      uViewport: { value: new THREE.Vector2(1, 1) },
+      uImage: { value: new THREE.Vector2(1, 1) },
+      uTime: { value: 0 },
+      uStrength: { value: DISTORTION_STRENGTH },
+      uAmbient: { value: AMBIENT_STRENGTH },
+      uChromatic: { value: CHROMATIC_ABERRATION_STRENGTH },
+      uSmear: { value: SMEAR_STRENGTH },
+      uGrain: { value: GRAIN_STRENGTH },
+      uSoftening: { value: SOFTENING },
+      uBlurRadius: { value: BLUR_RADIUS },
+      uSaturation: { value: SATURATION },
+      uContrast: { value: CONTRAST },
+      uVignette: { value: VIGNETTE },
+      uGlobalFlow: { value: GLOBAL_FLOW_STRENGTH },
+      uGlobalSoftening: { value: GLOBAL_SOFTENING },
+      uEdgeZoom: { value: EDGE_ZOOM },
+    };
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms,
+      defines: { SMEAR_SAMPLES: Math.max(8, Math.min(12, Math.round(SMEAR_SAMPLES))) },
+      depthTest: false,
+      depthWrite: false,
+    });
+    scene.add(new THREE.Mesh(geometry, material));
+    // Ping-pong: read last frame from one target, write this frame to the other.
+    const targetOptions = { type: THREE.HalfFloatType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false, stencilBuffer: false };
+    let flowRead = new THREE.WebGLRenderTarget(1, 1, targetOptions);
+    let flowWrite = new THREE.WebGLRenderTarget(1, 1, targetOptions);
+    const flowUniforms = {
+      uFlow: { value: flowRead.texture },
+      uTexel: { value: new THREE.Vector2(1, 1) },
+      uMetric: { value: new THREE.Vector2(1, 1) },
+      uMouse: { value: mouse },
+      uPreviousMouse: { value: previous },
+      uVelocity: { value: velocity },
+      uDt: { value: 1 / 60 },
+      uRadius: { value: MOUSE_RADIUS },
+      uDecay: { value: FLOW_DECAY },
+      uInjection: { value: FLOW_INJECTION },
+      uDiffusion: { value: FLOW_DIFFUSION },
+      uAdvection: { value: ADVECTION },
+    };
+    const flowMaterial = new THREE.ShaderMaterial({ vertexShader, fragmentShader: flowShader, uniforms: flowUniforms, depthTest: false, depthWrite: false, toneMapped: false });
+    const flowScene = new THREE.Scene();
+    flowScene.add(new THREE.Mesh(geometry, flowMaterial));
+    uniforms.uFlow.value = flowRead.texture;
+
+    function clearFlow() {
+      renderer.setClearColor(0x000000, 0);
+      for (const target of [flowRead, flowWrite]) {
+        renderer.setRenderTarget(target);
+        renderer.clear();
+      }
+      renderer.setRenderTarget(null);
+    }
+    let disposed = false;
+    let ready = false;
+    let frame = 0;
+    let lastTime = 0;
+    const texture = new THREE.VideoTexture(video);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    uniforms.uTexture.value = texture;
+    // Two decoders avoid seeking the visible video at the loop boundary.
+    // The standby video remains paused at its first frame outside transitions.
+    video.loop = false;
+    extraVideo = document.createElement("video");
+    extraVideo.muted = true;
+    extraVideo.playsInline = true;
+    extraVideo.preload = "auto";
+    extraVideo.src = element.dataset.video!;
+    extraVideo.setAttribute("aria-hidden", "true");
+    extraVideo.style.cssText = "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;";
+    element.append(extraVideo);
+    incomingVideo = extraVideo;
+    const nextTexture = new THREE.VideoTexture(extraVideo);
+    nextTexture.colorSpace = THREE.SRGBColorSpace;
+    uniforms.uNextTexture.value = nextTexture;
+    function useNativeLoop() {
+      seamlessLoopAvailable = false;
+      crossfading = false;
+      uniforms.uLoopBlend.value = 0;
+      incomingVideo?.pause();
+      activeVideo.loop = true;
+      if (!motion.matches && !document.hidden) void activeVideo.play().catch(() => {});
+    }
+    extraVideo.addEventListener("error", useNativeLoop);
+    extraVideo.load();
+
+    function updateLoop() {
+      if (!seamlessLoopAvailable) return;
+      const next = incomingVideo!;
+      if (!Number.isFinite(activeVideo.duration) || activeVideo.duration <= 0) return;
+      const fadeDuration = Math.min(LOOP_CROSSFADE_SECONDS, activeVideo.duration * 0.25);
+      const remaining = activeVideo.duration - activeVideo.currentTime;
+      if (!crossfading && !startingFade && remaining <= fadeDuration && next.readyState >= 2 && !next.seeking) {
+        startingFade = true;
+        void next
+          .play()
+          .then(() => {
+            startingFade = false;
+            if (disposed || motion.matches || document.hidden) {
+              next.pause();
+              return;
+            }
+            crossfading = true;
+          })
+          .catch(() => {
+            startingFade = false;
+            if (!disposed && !motion.matches && !document.hidden) useNativeLoop();
+          });
+      }
+      if (!crossfading) return;
+      // Use media time, so buffering never advances the dissolve prematurely.
+      const progress = Math.min(next.currentTime / fadeDuration, 1);
+      uniforms.uLoopBlend.value = progress * progress * (3 - 2 * progress);
+      if (progress < 1) return;
+      const finished = activeVideo;
+      activeVideo = next;
+      incomingVideo = finished;
+      const previousTexture = uniforms.uTexture.value;
+      uniforms.uTexture.value = uniforms.uNextTexture.value;
+      uniforms.uNextTexture.value = previousTexture;
+      uniforms.uLoopBlend.value = 0;
+      crossfading = false;
+      finished.pause();
+      finished.currentTime = 0;
+    }
+
+    function render() {
+      if (ready && !disposed) renderer.render(scene, camera);
+    }
+    function animate(now: number) {
+      frame = 0;
+      if (disposed || motion.matches || document.hidden || !ready) return;
+      const dt = Math.min((now - lastTime) / 1000 || 1 / 60, 0.05);
+      lastTime = now;
+      updateLoop();
+      previous.copy(mouse);
+      mouse.lerp(target, 1 - Math.exp(-CURSOR_SMOOTHING * dt));
+      const vx = ((mouse.x - previous.x) * uniforms.uViewport.value.x) / uniforms.uViewport.value.y / dt;
+      const vy = (mouse.y - previous.y) / dt;
+      const blend = 1 - Math.exp(-VELOCITY_DECAY * dt);
+      velocity.x += (THREE.MathUtils.clamp(vx, -1, 1) - velocity.x) * blend;
+      velocity.y += (THREE.MathUtils.clamp(vy, -1, 1) - velocity.y) * blend;
+      uniforms.uTime.value += dt;
+      flowUniforms.uDt.value = dt;
+      flowUniforms.uFlow.value = flowRead.texture;
+      renderer.setRenderTarget(flowWrite);
+      renderer.render(flowScene, camera);
+      renderer.setRenderTarget(null);
+      [flowRead, flowWrite] = [flowWrite, flowRead];
+      uniforms.uFlow.value = flowRead.texture;
+      render();
+      frame = requestAnimationFrame(animate);
+    }
+    function updateMotion() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      lastTime = performance.now();
+      velocity.set(0, 0);
+      mouse.copy(target);
+      previous.copy(mouse);
+      uniforms.uAmbient.value = motion.matches ? 0 : AMBIENT_STRENGTH;
+      if (motion.matches) {
+        clearFlow();
+        uniforms.uTime.value = 0;
+        canvas.style.opacity = "0";
+        video.style.visibility = "hidden"; // Show the still poster background.
+      } else {
+        video.style.visibility = "visible";
+        if (ready) canvas.style.opacity = "1";
+        if (ready && !document.hidden) frame = requestAnimationFrame(animate);
+      }
+    }
+    function resize() {
+      const { width, height } = element.getBoundingClientRect();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(width, height, false);
+      uniforms.uViewport.value.set(width, height);
+      const scale = FLOW_RESOLUTION / Math.max(width, height, 1);
+      const flowWidth = Math.max(1, Math.round(width * scale));
+      const flowHeight = Math.max(1, Math.round(height * scale));
+      flowRead.setSize(flowWidth, flowHeight);
+      flowWrite.setSize(flowWidth, flowHeight);
+      flowUniforms.uTexel.value.set(1 / flowWidth, 1 / flowHeight);
+      flowUniforms.uMetric.value.set(width / Math.max(height, 1), 1);
+      clearFlow();
+      render();
+    }
+    function pointer(event: PointerEvent) {
+      if (motion.matches) return;
+      const rect = element.getBoundingClientRect();
+      target.set((event.clientX - rect.left) / rect.width, 1 - (event.clientY - rect.top) / rect.height);
+    }
+    function contextLost(event: Event) {
+      event.preventDefault();
+      cleanup(); // Keep the CSS fallback visible after GPU context loss.
+    }
+    function cleanup() {
+      if (disposed) return;
+      disposed = true;
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", pointer);
+      window.removeEventListener("pointerdown", pointer);
+      document.removeEventListener("visibilitychange", updateMotion);
+      motion.removeEventListener("change", updateMotion);
+      video.removeEventListener("loadeddata", videoReady);
+      video.removeEventListener("resize", videoReady);
+      video.removeEventListener("error", cleanup);
+      canvas.removeEventListener("webglcontextlost", contextLost);
+      canvas.style.opacity = "0";
+      geometry.dispose();
+      material.dispose();
+      flowMaterial.dispose();
+      flowRead.dispose();
+      flowWrite.dispose();
+      texture?.dispose();
+      nextTexture.dispose();
+      extraVideo?.removeEventListener("error", useNativeLoop);
+      renderer.dispose();
+      stopPlayback();
+      video.loop = true;
+    }
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("pointermove", pointer, { passive: true });
+    window.addEventListener("pointerdown", pointer, { passive: true });
+    document.addEventListener("visibilitychange", updateMotion);
+    motion.addEventListener("change", updateMotion);
+    canvas.addEventListener("webglcontextlost", contextLost);
+    function videoReady() {
+      if (disposed || !video.videoWidth || video.readyState < 2) return;
+      uniforms.uImage.value.set(video.videoWidth, video.videoHeight);
+      ready = true;
+      updateMotion();
+      render();
+    }
+    video.addEventListener("loadeddata", videoReady);
+    video.addEventListener("resize", videoReady);
+    video.addEventListener("error", cleanup);
+    updateMotion();
+    videoReady();
+    return cleanup;
+  }
+
+  let cleanups: Array<() => void> = [];
+  function unmount() {
+    cleanups.forEach((cleanup) => cleanup());
+    cleanups = [];
+  }
+  function mount() {
+    unmount();
+    document.querySelectorAll<HTMLElement>("[data-liquid-background]").forEach((element) => {
+      cleanups.push(mountBackground(element));
+    });
+  }
+  // Also works if Astro client navigation is enabled later.
+  document.addEventListener("astro:before-swap", unmount);
+  document.addEventListener("astro:page-load", mount);
+  window.addEventListener("pagehide", unmount);
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) mount();
+  });
+  mount();
+</script>

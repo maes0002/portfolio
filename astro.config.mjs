@@ -1,12 +1,15 @@
-import { defineConfig } from 'astro/config';
-import tailwindcss from '@tailwindcss/vite'; 
-
+import { defineConfig } from "astro/config";
 import alpinejs from "@astrojs/alpinejs";
+import tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
 
-// https://astro.build/config
 export default defineConfig({
-  vite: {  
-    plugins: [tailwindcss()],
+  vite: {
+    css: {
+      postcss: {
+        plugins: [tailwindcss({ config: "./tailwind.config.mjs" }), autoprefixer()],
+      },
+    },
   },
   integrations: [alpinejs()],
 });
