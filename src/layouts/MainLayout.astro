@@ -2,29 +2,42 @@
 import "../styles/tailwind.css";
 import LiquidBackground from "../components/LiquidBackground.astro";
 import Cursor from "../components/Cursor.astro";
-const { title } = Astro.props;
+import ScrollEffects from "../components/ScrollEffects.astro";
+const { title, liquidBackground = true, liquidOpacity = 0.15 } = Astro.props;
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 ---
 
-<html lang="da" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/svg/logo.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="robots" content="noindex, nofollow" />
     <title>{title}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;700&display=swap" rel="stylesheet" />
-    <script defer src="https://unpkg.com/tailwindcss-intersect@2.x.x/dist/observer.min.js"></script>
+    <meta name="original-title" content={title} />
   </head>
   <body class="min-h-screen text-black antialiased" style="isolation: isolate;">
-    <LiquidBackground />
+    {liquidBackground && <LiquidBackground opacity={liquidOpacity} />}
     <Header />
     <slot />
     <Footer />
     <Cursor />
+    <ScrollEffects />
   </body>
 </html>
+
+<style>
+  body { --page-gutter: 15px; --page-max-width: 1440px; display: flex; flex-direction: column; min-height: 100svh; background-color: #f6f7f1; }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: #f6f7f1;
+    pointer-events: none;
+  }
+  body :global(main) { flex: 1; width: min(var(--page-max-width), calc(100% - 2 * var(--page-gutter))); margin-inline: auto; }
+  @media (max-width: 640px) { body { --page-gutter: 16px; } }
+</style>

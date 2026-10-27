@@ -2,23 +2,32 @@
 import type { HTMLAttributes } from "astro/types";
 
 const textClasses = {
-  p_small_reg: "text-[13px] font-normal leading-relaxed",
-  p_base_reg: "text-[14px] font-normal leading-relaxed",
-  p_base_med: "text-[14px] font-medium leading-relaxed",
-  p_large_reg: "text-[16px] font-normal leading-relaxed",
-  p_large_med: "text-[16px] font-medium leading-relaxed",
-  brand_label: "text-[18px] font-semibold leading-none",
-  brødtekst: "text-[14px] font-normal leading-relaxed",
-  konsultativ: "text-[13px] font-normal leading-relaxed",
+  p: "type-p",
+  p_semib: "type-p-semib",
+  p_thinner: "type-p-thinner",
+  p_smaller: "type-p-smaller",
+  p_italic: "type-p-italic",
+  h1: "type-h1",
+  h2: "type-h2",
+  link: "type-link",
+  // Existing names remain supported while callers adopt the Figma names.
+  p_small_reg: "type-p",
+  p_base_reg: "type-p",
+  p_base_med: "type-p",
+  p_large_reg: "type-p",
+  p_large_med: "type-p",
+  brand_label: "type-p-semib",
+  brødtekst: "type-p",
+  konsultativ: "type-p-thinner",
 };
 
 interface Props extends HTMLAttributes<"span"> {
-  as?: "span" | "p";
+  as?: "span" | "p" | "h1" | "h2" | "h3";
   teksttype?: keyof typeof textClasses;
   stylingclasses?: string;
 }
 
-const { as = "span", teksttype = "p_base_reg",
+const { as = "span", teksttype = "p",
   stylingclasses, class: className, ...attributes } = Astro.props;
 const Tag = as;
 ---

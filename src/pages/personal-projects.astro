@@ -1,0 +1,221 @@
+---
+import Localized from "../components/Localized.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import Text from "../components/Text.astro";
+import Link from "../components/Link.astro";
+
+interface PersonalProject {
+  number: string;
+  title?: string;
+  description?: string;
+  descriptionDa?: string;
+  note?: string;
+  noteDa?: string;
+  images: { src: string; alt: string; video?: boolean; slides?: { src: string; alt: string }[] }[];
+  href?: string;
+}
+
+// Replace the empty image paths and draft text with each project's content.
+const projects: PersonalProject[] = [
+  {
+    number: "01",
+    title: "Volta",
+    description: "An independently created magazine.",
+    descriptionDa: "Et personligt magasinprojekt.",
+    note: "Editorial design · Magazine",
+    noteDa: "Editorial design · Magasin",
+    images: [{ offset: 0, count: 4 }, { offset: 4, count: 3 }].map(({ offset, count }) => ({
+      src: `/img/volta/volta_${offset + 1}.webp`,
+      alt: `Volta — ${offset + 1}`,
+      slides: Array.from({ length: count }, (_, index) => ({
+        src: `/img/volta/volta_${offset + index + 1}.webp`,
+        alt: `Volta — ${offset + index + 1}`,
+      })),
+    })),
+  },
+  {
+    number: "02",
+    title: "Clinique Harmonie",
+    description: "A personal redesign project created to give Clinique Harmonie's website a more modern and refined visual identity. I saw an opportunity to elevate the existing website through a minimalist design, warm neutral tones, elegant typography, and thoughtful imagery. The goal was to create a more intuitive and visually cohesive experience that reflects the clinic's calming atmosphere and focus on wellness, while making it easier for visitors to explore treatments and book appointments.",
+    descriptionDa: "Et personligt redesignprojekt med fokus på at give Clinique Harmonies hjemmeside en mere moderne og raffineret visuel identitet. Jeg så en mulighed for at løfte den eksisterende hjemmeside med et minimalistisk design, varme neutrale toner, elegant typografi og et gennemtænkt billedvalg. Målet var at skabe en mere intuitiv og visuelt sammenhængende oplevelse, der afspejler klinikkens rolige atmosfære og fokus på velvære, og samtidig gør det lettere for besøgende at udforske behandlinger og bestille tid.",
+    note: "This is an independent concept project and is not affiliated with Clinique Harmonie.",
+    noteDa: "Dette er et uafhængigt konceptprojekt uden tilknytning til Clinique Harmonie.",
+    images: [
+      { src: "/video/clinique_harmonie_vid.mp4", alt: "Clinique Harmonie — video", video: true },
+      {
+        src: "/img/clinique/clinique_1.webp",
+        alt: "Clinique Harmonie — 1",
+        slides: Array.from({ length: 5 }, (_, index) => ({
+          src: `/img/clinique/clinique_${index + 1}.webp`,
+          alt: `Clinique Harmonie — ${index + 1}`,
+        })),
+      },
+    ],
+  },
+  {
+    number: "03",
+    title: "La Dolce Vita Cardgame",
+    images: [
+      { src: "/video/kortspil.mp4", alt: "La Dolce Vita Cardgame — video", video: true },
+      { src: "", alt: "" },
+    ],
+  },
+  { number: "04", images: [{ src: "", alt: "" }, { src: "", alt: "" }] },
+  { number: "05", images: [{ src: "", alt: "" }, { src: "", alt: "" }] },
+];
+---
+
+<MainLayout title="Personal Projects — Maja Estrup">
+  <main class="personal-page">
+    <header class="personal-intro">
+      <Text as="p" teksttype="p_smaller" class="intro-selected"><Localized en="Selected" da="Udvalgte" /></Text>
+      <Text as="h1" teksttype="h1" class="intro-title"><Localized en="Personal projects" da="Egne projekter" /></Text>
+    </header>
+    <div class="personal-projects">
+      {projects.map((project, index) => (
+        <article class="personal-project" data-layout={index + 1} aria-labelledby={`personal-project-${project.number}`}>
+          <div class="project-copy">
+            <div>
+              <Text as="p" teksttype="h2" class="project-number">NO {project.number}.</Text>
+              <Text as="h2" teksttype="h2" id={`personal-project-${project.number}`} class="project-title"><Localized en={project.title ?? `Project ${project.number}`} da={project.title ?? `Projekt ${project.number}`} /></Text>
+              <Text as="p" teksttype="p" class="project-description"><Localized en={project.description ?? "Project description coming soon."} da={project.descriptionDa ?? "Projektbeskrivelse kommer snart."} /></Text>
+              {project.href && <Link class="project-link" href={project.href}><Localized en="View project" da="Se projektet" /></Link>}
+            </div>
+            <Text as="p" teksttype="p_italic" class="project-note"><Localized en={project.note ?? "Project notes coming soon."} da={project.noteDa ?? "Projektnoter kommer snart."} /></Text>
+          </div>
+          {project.images.map((image, imageIndex) => {
+            const Media = project.href ? Link : "div";
+            const mediaProps = project.href ? { href: project.href, variant: "image" as const, "aria-label": project.title ?? `Project ${project.number}` } : {};
+            return (
+              <figure class:list={["project-figure", imageIndex === 0 ? "primary-image" : "secondary-image"]}>
+                <Text as="p" teksttype="h2" class="image-number">{project.number}</Text>
+                {image.slides ? (
+                  <div class="project-gallery" data-gallery>
+                    <div class="project-media gallery-track" tabindex="0" role="region" aria-label={`${project.title ?? `Project ${project.number}`} — ${imageIndex + 1}`}>
+                      {image.slides.map((slide) => (
+                        <img src={slide.src} alt={slide.alt} loading="lazy" draggable="false" />
+                      ))}
+                    </div>
+                    <div class="gallery-controls">
+                      <button type="button" data-direction="-1" aria-label="Forrige billede / Previous image">←</button>
+                      <span class="gallery-count" aria-live="polite" aria-atomic="true">1 / {image.slides.length}</span>
+                      <button type="button" data-direction="1" aria-label="Næste billede / Next image">→</button>
+                    </div>
+                  </div>
+                ) : <Media {...mediaProps} class:list={["project-media", { "video-media": image.video }]}>
+                  {image.video ? <video src={image.src} autoplay muted loop controls playsinline preload="metadata" aria-label={image.alt}></video> : image.src ? <img src={image.src} alt={image.alt} loading="lazy" /> : <div class="image-placeholder" role="img" aria-label={`Image placeholder for personal project ${project.number}`}></div>}
+                </Media>}
+              </figure>
+            );
+          })}
+        </article>
+      ))}
+    </div>
+  </main>
+</MainLayout>
+
+<script>
+  const autoScrollInterval = 4000;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((gallery) => {
+    const track = gallery.querySelector<HTMLElement>(".gallery-track")!;
+    const count = gallery.querySelector<HTMLElement>(".gallery-count")!;
+    const buttons = gallery.querySelectorAll<HTMLButtonElement>("button[data-direction]");
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const pause = () => window.clearTimeout(timer);
+    const scheduleNext = () => {
+      pause();
+      if (reducedMotion.matches || document.hidden || gallery.matches(":hover, :focus-within") || track.children.length < 2) return;
+      timer = window.setTimeout(() => {
+        const index = Math.round(track.scrollLeft / track.clientWidth);
+        const nextIndex = (index + 1) % track.children.length;
+        track.scrollTo({ left: nextIndex * track.clientWidth, behavior: "smooth" });
+        scheduleNext();
+      }, autoScrollInterval);
+    };
+    const update = () => {
+      const index = Math.round(track.scrollLeft / track.clientWidth);
+      count.textContent = `${index + 1} / ${track.children.length}`;
+      buttons.forEach((button) => {
+        button.disabled = Number(button.dataset.direction) < 0 ? index === 0 : index === track.children.length - 1;
+      });
+    };
+    buttons.forEach((button) => button.addEventListener("click", () => {
+      const index = Math.round(track.scrollLeft / track.clientWidth);
+      track.scrollTo({ left: (index + Number(button.dataset.direction)) * track.clientWidth, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+    }));
+    track.addEventListener("scroll", () => {
+      update();
+      scheduleNext();
+    }, { passive: true });
+    gallery.addEventListener("mouseenter", pause);
+    gallery.addEventListener("mouseleave", scheduleNext);
+    gallery.addEventListener("focusin", pause);
+    gallery.addEventListener("focusout", () => requestAnimationFrame(scheduleNext));
+    gallery.addEventListener("touchstart", pause, { passive: true });
+    gallery.addEventListener("touchend", scheduleNext, { passive: true });
+    gallery.addEventListener("touchcancel", scheduleNext, { passive: true });
+    document.addEventListener("visibilitychange", scheduleNext);
+    reducedMotion.addEventListener("change", scheduleNext);
+    update();
+    scheduleNext();
+  });
+</script>
+
+<style>
+  .personal-page { padding: calc(var(--site-header-height, 72px) + 100px) 0 170px; }
+  .personal-intro { display: flex; flex-direction: column; gap: 35px; width: fit-content; max-width: 100%; margin: 0 auto 126px; text-transform: uppercase; }
+  .personal-intro :global(.intro-selected), .personal-intro :global(.intro-title) { margin: 0; }
+  .personal-projects { display: grid; gap: clamp(64px, 7vw, 110px); }
+  .personal-project { display: grid; grid-template-columns: 1fr 1fr .85fr; gap: 25px; align-items: start; }
+  .project-copy { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; align-self: stretch; min-width: 0; }
+  .project-copy :global(.project-number) { margin: 0 0 25px; }
+  .project-copy :global(.project-title) { margin: 0 0 10px; text-transform: uppercase; }
+  .project-copy :global(.project-description) { margin: 0; max-width: 310px; }
+  .project-copy :global(.project-link) { margin-top: 15px; }
+  .project-copy :global(.project-note) { margin: auto 0 0; max-width: 210px; padding-top: 48px; }
+  .project-figure { margin: 0; min-width: 0; grid-row: 1; }
+  .project-figure :global(.image-number) { margin: 0 0 15px; }
+  .primary-image { grid-column: 2; }
+  .secondary-image { grid-column: 3; }
+  .project-figure :global(.project-media) { display: block; overflow: hidden; aspect-ratio: 4 / 5; }
+  .secondary-image :global(.project-media) { aspect-ratio: 1.1 / 1; }
+  .project-media img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 650ms cubic-bezier(.22, 1, .36, 1); }
+  .project-figure :global(.project-media.video-media) { aspect-ratio: auto; }
+  .project-media video { display: block; width: 100%; height: auto; }
+  .project-figure .gallery-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .gallery-track::-webkit-scrollbar { display: none; }
+  .gallery-track img { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; object-fit: contain; }
+  .gallery-track:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+  .gallery-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; font-size: 12px; }
+  .gallery-controls button { border: 0; background: transparent; color: inherit; cursor: pointer; min-width: 44px; min-height: 44px; font-size: 22px; }
+  .gallery-controls button:disabled { opacity: .25; cursor: default; }
+  .gallery-controls button:focus-visible { outline: 2px solid currentColor; }
+  .image-placeholder { width: 100%; height: 100%; background: #cecece; }
+  [data-layout="2"] .primary-image { grid-column: 1; }
+  [data-layout="2"] .project-copy { grid-column: 2; }
+  [data-layout="2"] .secondary-image :global(.project-media) { aspect-ratio: 1 / 1; }
+  [data-layout="3"] .primary-image :global(.project-media) { aspect-ratio: 8 / 9; }
+  [data-layout="3"] .primary-image :global(.project-media.video-media) { aspect-ratio: 9 / 16; width: 55%; margin-inline: auto; }
+  [data-layout="3"] .video-media video { height: 100%; object-fit: contain; }
+  [data-layout="3"] .secondary-image :global(.project-media) { aspect-ratio: .85 / 1.125; }
+  [data-layout="4"] { grid-template-columns: .85fr 1fr 1fr; }
+  [data-layout="4"] .project-copy { grid-column: 3; }
+  [data-layout="4"] .secondary-image { grid-column: 1; }
+  [data-layout="4"] .secondary-image :global(.project-media) { aspect-ratio: 1 / 1; }
+  @media (hover: hover) and (pointer: fine) { :global(a.project-media:hover) img { transform: scale(1.025); } }
+  :global(a.project-media:focus-visible) img { transform: scale(1.025); }
+  @media (prefers-reduced-motion: reduce) { .project-media img { transition: none; transform: none !important; } }
+  @media (min-width: 641px) and (max-width: 900px) { .personal-project { gap: 16px; } }
+  @media (max-width: 640px) {
+    .personal-page { padding: 160px 0 80px; }
+    .personal-projects { gap: 64px; }
+    .personal-project, [data-layout="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+    .personal-project .project-copy { grid-column: 1 / -1; grid-row: 1; }
+    .project-copy :global(.project-number) { margin-bottom: 16px; }
+    .project-copy :global(.project-note) { padding-top: 16px; }
+    .personal-project .primary-image { grid-column: 1; grid-row: 2; }
+    .personal-project .secondary-image { grid-column: 2; grid-row: 2; }
+  }
+</style>

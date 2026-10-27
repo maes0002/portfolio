@@ -10,6 +10,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 @theme {
   /* Farver */
   --color-black: #2b2a2a;
@@ -56,4 +64,23 @@
     border-radius: 52% 48% 64% 36% / 38% 54% 46% 62%;
     transform: scale(1.08) rotate(-16deg);
   }
+}
+
+/* Figma typography: Geist Mono, shared by pages and components. */
+:root {
+  --type-body-size: 12px;
+  --type-body-leading: 16px;
+  --type-heading-tracking: -0.06em;
+}
+body { font-family: "Geist Mono", monospace; font-size: var(--type-body-size); line-height: var(--type-body-leading); font-weight: 500; letter-spacing: 0; }
+p, .type-p { font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0; }
+.type-p-semib { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0; }
+.type-p-thinner { font-size: 11px; line-height: 15px; font-weight: 400; letter-spacing: 0; }
+.type-p-smaller { font-size: 10px; line-height: 8px; font-weight: 400; letter-spacing: 0; }
+.type-p-italic { font-size: 12px; line-height: 16px; font-weight: 400; font-style: italic; letter-spacing: 0; }
+.type-link { font-size: 12px; line-height: normal; font-weight: 600; letter-spacing: -0.06em; text-decoration: underline; text-underline-offset: 3px; }
+h1, .type-h1 { font-size: 20px; line-height: 12px; font-weight: 600; letter-spacing: var(--type-heading-tracking); }
+h2, h3, .type-h2 { font-size: 12px; line-height: 12px; font-weight: 600; letter-spacing: var(--type-heading-tracking); }
+@media (max-width: 640px) {
+  h1:not(.type-p-semib), .type-h1 { font-size: 20px; line-height: 24px; }
 }

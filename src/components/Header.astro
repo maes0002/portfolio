@@ -1,25 +1,82 @@
 ---
+import Localized from "./Localized.astro";
+import LanguageSwitch from "./LanguageSwitch.astro";
 import Text from "../components/Text.astro";
 import Link from "../components/Link.astro";
+const isHome = Astro.url.pathname === "/";
 ---
 
 <header class="site-header">
-  <Text as="p" teksttype="p_small_reg" class="brand">
+  <div class="mobile-language"><LanguageSwitch /></div>
+  <div class="header-brand">
+  {isHome ? <Text as="p" teksttype="p_small_reg" class="brand">
     MAJA ESTRUP<br />
-    DIGITAL DESIGNER
-  </Text>
+    <Localized en="DIGITAL DESIGNER" />
+  </Text> : (
+    <Link href="/" variant="logo" aria-label="Home">
+      <img src="/svg/logo.svg" alt="Maja Estrup" width="51" height="18" />
+    </Link>
+  )}
+  </div>
 
-  <nav aria-label="Hovedmenu">
-    <Link href="/work">MY WORK</Link>
+  <button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-navigation">
+    <span class="burger-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+  </button>
+  <nav id="main-navigation" aria-label="Main navigation">
+    <Link href="/school-projects"><Localized en="SCHOOL PROJECTS" /></Link>
+    <Link href="/personal-projects"><Localized en="PERSONAL PROJECTS" /></Link>
     <span class="resume-link">
-      <Link href="/resume" aria-describedby="resume-hint">RESUMÉ</Link>
-      <span id="resume-hint" class="resume-hint">Download PDF ↗</span>
+      <Link href="/resume" aria-describedby="resume-hint"><Localized en="RESUMÉ" /></Link>
+      <span id="resume-hint" class="resume-hint"><Localized en="Download PDF ↗" /></span>
     </span>
-    <Link href="/my-style">MY STYLE</Link>
+    <div class="mobile-contact"><Link href="mailto:majaestrup@gmail.com"><Localized en="CONTACT ME" da="KONTAKT MIG" /></Link></div>
+    <div class="desktop-language"><LanguageSwitch /></div>
   </nav>
 </header>
 
+<script>
+  const header = document.querySelector<HTMLElement>(".site-header");
+  if (header) {
+    const updateHeaderHeight = () => {
+      document.documentElement.style.setProperty("--site-header-height", `${header.offsetHeight}px`);
+    };
+    const headerObserver = new ResizeObserver(updateHeaderHeight);
+    headerObserver.observe(header);
+    updateHeaderHeight();
+    document.addEventListener("astro:before-swap", () => headerObserver.disconnect(), { once: true });
+  }
+  function updateHeader() {
+    header?.classList.toggle("is-scrolled", window.scrollY > 24);
+  }
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
+  window.addEventListener("pageshow", updateHeader);
+  const toggle = header?.querySelector<HTMLButtonElement>(".menu-toggle");
+  const navigation = header?.querySelector<HTMLElement>("#main-navigation");
+  function setMenu(open: boolean) {
+    header?.classList.toggle("menu-open", open);
+    toggle?.setAttribute("aria-expanded", String(open));
+  }
+  toggle?.addEventListener("click", () => setMenu(toggle.getAttribute("aria-expanded") !== "true"));
+  navigation?.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest("a")) setMenu(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && toggle?.getAttribute("aria-expanded") === "true") {
+      setMenu(false);
+      toggle.focus();
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Node && !header?.contains(event.target)) setMenu(false);
+  });
+  matchMedia("(max-width: 640px)").addEventListener("change", () => setMenu(false));
+  window.addEventListener("pageshow", () => setMenu(false));
+</script>
+
 <style>
+  .mobile-contact, .mobile-language { display: none; }
+  .menu-toggle { display: none; }
   .site-header {
     position: fixed;
     inset: 0 0 auto;
@@ -28,20 +85,34 @@ import Link from "../components/Link.astro";
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    padding: 22px;
-    font-size: 13px;
-    font-weight: 500;
+    padding: 22px var(--page-gutter);
+    width: min(100%, calc(var(--page-max-width) + 2 * var(--page-gutter)));
+    margin-inline: auto;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgb(0 0 0 / 0%);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    border-bottom: 1px solid transparent;
+    transition: background-color 900ms ease, backdrop-filter 900ms ease, -webkit-backdrop-filter 900ms ease;
+  }
+
+  .site-header.is-scrolled {
+    background: rgb(0 0 0 / 5%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .site-header :global(.brand) {
     margin: 0;
     line-height: 1.4;
-    font-weight: 500;
+    font-weight: 600;
     white-space: nowrap;
   }
 
   nav {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 40px;
   }
@@ -50,7 +121,9 @@ import Link from "../components/Link.astro";
     white-space: nowrap;
   }
 
-  .resume-link { position: relative; }
+  .resume-link {
+    position: relative;
+  }
   .resume-hint {
     position: absolute;
     top: calc(100% + 8px);
@@ -61,7 +134,7 @@ import Link from "../components/Link.astro";
     border-radius: 3px;
     background: rgb(252 252 252 / 92%);
     font-family: "Geist Mono", monospace;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 400;
     white-space: nowrap;
     opacity: 0;
@@ -81,17 +154,51 @@ import Link from "../components/Link.astro";
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .resume-hint { transition: none; }
+    .site-header { transition: none; }
+    .resume-hint {
+      transition: none;
+    }
   }
 
-  @media (max-width: 540px) {
+  @media (max-width: 760px) {
     .site-header {
       flex-wrap: wrap;
       gap: 16px;
-      padding: 16px;
+      padding: 16px var(--page-gutter);
     }
     nav {
-      gap: 24px;
+      gap: 16px 24px;
     }
+  }
+  @media (max-width: 640px) {
+    .site-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 24px var(--page-gutter); font-size: 12px; }
+    .site-header.menu-open { background: rgb(232 232 226 / 96%); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-color: rgb(0 0 0 / 10%); }
+    .mobile-language { display: block; justify-self: start; }
+    .mobile-language :global(.language-switch) { font-size: 12px; }
+    .mobile-contact { display: block; }
+    .desktop-language { display: none; }
+    .header-brand { justify-self: center; padding-top: 3px; }
+    .header-brand :global(.brand) { font-size: 12px; }
+    .header-brand :global(img) { width: 44px; height: auto; }
+    .menu-toggle { display: flex; align-items: center; gap: 8px; justify-self: end; min-height: 44px; min-width: 44px; justify-content: flex-end; font-family: "Geist Mono", monospace; font-size: 12px; }
+    .menu-toggle:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+    .burger-lines { position: relative; width: 26px; height: 20px; }
+    .burger-lines span { position: absolute; left: 0; width: 26px; height: 1px; background: currentColor; transition: transform 200ms ease; }
+    .burger-lines span:first-child { top: 1px; }
+    .burger-lines span:nth-child(2) { top: 9px; }
+    .burger-lines span:last-child { top: 17px; }
+    .menu-open .burger-lines span:first-child { transform: translateY(8px) rotate(45deg); }
+    .menu-open .burger-lines span:nth-child(2) { opacity: 0; }
+    .menu-open .burger-lines span:last-child { transform: translateY(-8px) rotate(-45deg); }
+    nav { display: none; grid-column: 1 / -1; width: 100%; flex-direction: column; align-items: flex-end; gap: 22px; padding: 24px 0 8px; }
+    .menu-open nav { display: flex; }
+    .resume-hint { left: auto; right: 0; transform: translateY(-4px); }
+    .resume-link:is(:hover, :focus-within) .resume-hint { transform: translateY(0); }
+    .resume-hint { font-size: 12px; }
+    .resume-link .resume-hint { position: static; display: block; opacity: .6; visibility: visible; transform: none; padding: 6px 0 0; background: transparent; border: 0; text-align: right; }
+    .resume-link:is(:hover, :focus-within) .resume-hint { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .burger-lines span { transition: none; }
   }
 </style>

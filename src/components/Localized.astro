@@ -1,0 +1,6 @@
+---
+import { danish } from '../lib/translations';
+interface Props { en: string; da?: string; }
+const { en, da = danish(en) } = Astro.props;
+---
+<span data-language-en={en} data-language-da={da}>{en}</span>

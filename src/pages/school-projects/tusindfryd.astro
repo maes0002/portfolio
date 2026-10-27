@@ -1,0 +1,193 @@
+---
+import Link from "../../components/Link.astro";
+import Localized from "../../components/Localized.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import Text from "../../components/Text.astro";
+
+const mockups = [
+  {
+    image: "/img/tusindfryds/tusindfryds_2.webp", label: "Mobile mockup", alt: "Tusindfryd website on mobile", layout: "mobile",
+    heading: "UX research & information architecture", headingDa: "UX-research og informationsarkitektur",
+    text: "As a team, we structured the workflow to keep tasks and priorities clear. We translated client and user interviews, questionnaire responses and benchmarks into design priorities. Customers needed clear information about condition, dimensions, delivery and membership before committing to a purchase. We made these details easier to find and gave the showroom and the people behind the brand dedicated pages. The aim was to reduce uncertainty through structure and content, rather than relying on visual styling alone.",
+    textDa: "I teamet strukturerede vi arbejdsprocessen, så der var overblik over opgaver og prioriteringer. Vi omsatte kunde- og brugerinterviews, spørgeskemasvar og benchmarks til konkrete designprioriteter. Kunderne havde brug for tydelig information om stand, mål, levering og medlemskab, før de kunne føle sig trygge ved et køb. Derfor gjorde vi oplysningerne lettere at finde og gav showroomet og menneskene bag brandet egne sider. Målet var at mindske usikkerhed gennem struktur og indhold, frem for kun at arbejde med det visuelle.",
+ },
+  {
+    image: "/img/tusindfryds/tusindfryds_3.webp", label: "Laptop mockup", alt: "Tusindfryd website on a laptop", layout: "laptop",
+    heading: "UI design & visual consistency", headingDa: "UI-design og visuel sammenhæng",
+    text: "As a team, we developed the concept “Let the products speak” and the brand identity. We worked on the interactive Figma prototype and design system, using tokens, variables and styles to connect typography, colour and spacing with reusable components. A neutral palette, consistent grids and generous spacing kept attention on the furniture. The system made the design easier to implement consistently. Together, we photographed 41 products during the content shoot with consistent angles and backgrounds. These choices connected brand identity, product presentation and practical usability.",
+    textDa: "I teamet udviklede vi konceptet “Lad produkterne tale” og brandidentiteten. Vi arbejdede med den interaktive prototype og designsystemet i Figma, hvor tokens, variables og styles forbandt typografi, farver og spacing med genanvendelige komponenter. En neutral farvepalette, konsekvente grids og god luft holdt fokus på møblerne. Systemet gjorde det lettere at implementere designet konsekvent. Under content-shootet fotograferede vi sammen 41 produkter med ensartede vinkler og baggrunde. Valgene bandt brandidentitet, produktpræsentation og brugervenlighed sammen.",
+ },
+  {
+    image: "/img/tusindfryds/tusindfryds_4.webp", label: "Tablet mockup", alt: "Tusindfryd website on tablet", layout: "tablet",
+    heading: "User feedback & design improvements", headingDa: "Brugerfeedback og designforbedringer",
+    text: "As a team, we tested the solution and used feedback to identify concrete improvements. A five-second test with 15 respondents revealed uncertainty about what the website sold, so we clarified the hero copy. In the first-click test, all 12 respondents found the product information correctly. Think-aloud sessions led to larger text, while contrast checks prompted a darker secondary text colour. The feedback supported key design decisions and showed where clarity and readability needed attention.",
+    textDa: "I teamet testede vi løsningen og brugte feedback til at identificere konkrete forbedringer. En 5-second-test med 15 respondenter viste usikkerhed om, hvad websitet solgte, så vi præciserede hero-teksten. I first-click-testen fandt alle 12 respondenter korrekt frem til produktinformationen. Tænke-højt-tests førte til større tekst, og kontrastkontrol gav en mørkere sekundær tekstfarve. Feedbacken underbyggede centrale designvalg og viste, hvor tydelighed og læsbarhed skulle forbedres.",
+ },
+];
+const gallery: { image: string; alt: string; wide?: boolean }[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16].map((number, index) => ({
+  image: `/img/tusindfryds/tusindfrydsgalleri_${number}.webp`,
+  alt: `Case image ${index + 1}`,
+  wide: index === 6 || index === 14,
+}));
+---
+
+<MainLayout title="Tusindfryd — Maja Estrup" liquidBackground={true} liquidOpacity={0.15}>
+  <main class="case-page">
+    <aside class="case-info" aria-label="Project information">
+      <Text as="h1" teksttype="p_semib" class="m-0"><Localized en="Case:" /><br /> Tusindfryd</Text>
+      <Text as="p" teksttype="p_semib" class="m-0"><Localized en="Website" /><br /> <Localized en="redesign" /></Text>
+      <Text as="p" teksttype="p_semib" class="m-0"><Localized en="Final exam" /><br /> / 2026</Text>
+      <div class="website-link">
+        <Link href="https://tusindfryd.netlify.app/" target="_blank" rel="noopener noreferrer" aria-describedby="website-note"><Localized en="Visit website ↗" da="Se websitet ↗" /></Link>
+        <p id="website-note" class="website-note type-p-thinner" role="tooltip"><Localized en="Product images may be unavailable because the Supabase project is paused after a period of inactivity." da="Produktbilleder kan mangle, da Supabase-projektet er sat på pause efter en periode uden aktivitet." /></p>
+      </div>
+      <Link class="back-link" href="/school-projects"><Localized en="← School projects" /></Link>
+    </aside>
+
+    <div class="case-content">
+      <section class="case-section hero" aria-label="Project introduction">
+        <img class="hero-image" src="/img/tusindfryds/tusindfryds_1.webp" alt="Tusindfryd website presented on a desktop monitor" />
+        <div class="section-copy"><Text as="p" teksttype="p_small_reg" class="m-0"><Localized en="A responsive webshop redesign for Tusindfryd, a curated vintage furniture studio. The challenge was to make the digital experience reflect the quality of the products while making navigation, product information and membership easier to understand. The result brings a calm visual identity together with a functional product catalogue." da="Et responsivt webshop-redesign for Tusindfryd, et studio med kuraterede vintagemøbler. Opgaven var at lade den digitale oplevelse afspejle produkternes kvalitet og samtidig gøre navigation, produktinformation og medlemskab lettere at forstå. Resultatet kombinerer et roligt visuelt udtryk med et funktionelt produktkatalog." /></Text><Text as="p" teksttype="p_small_reg" class="mt-6 mb-0"><Localized en="As a team, we worked across the entire project: research, concept development, brand identity, workflow planning, the content shoot, user testing and implementation. Everyone contributed across disciplines. My skills were applied throughout, including the Figma prototype and design system with tokens, variables and styles, and coding half of the website." da="I teamet arbejdede vi med hele projektet: research, konceptudvikling, brandidentitet, arbejdsstruktur, content-shoot, brugertests og implementering. Alle bidrog på tværs af fagområder. Mine kompetencer kom i spil gennem hele processen, blandt andet i prototype og designsystem i Figma med tokens, variables og styles samt kodning af halvdelen af websitet." /></Text></div>
+      </section>
+
+      {mockups.map((mockup) => (
+        <section class="case-section mockup-section" data-layout={mockup.layout} aria-label={mockup.label}>
+          <div class="section-copy">
+            <h2 class="mockup-heading"><Localized en={mockup.heading} da={mockup.headingDa} /></h2>
+            <Text as="p" teksttype="p_small_reg" class="m-0"><Localized en={mockup.text} da={mockup.textDa} /></Text>
+          </div>
+          <div class="mockup-media">
+            {mockup.image ? <img src={mockup.image} alt={mockup.alt} loading="lazy" /> : <div class="asset-placeholder"><Localized en={mockup.label} /></div>}
+          </div>
+        </section>
+      ))}
+
+      <section class="case-section walkthrough" id="website-preview" aria-labelledby="walkthrough-title">
+        <div class="section-copy">
+          <h2 id="walkthrough-title"><Localized en="The implemented result" da="Det implementerede resultat" /></h2>
+          <Text as="p" teksttype="p_small_reg" class="m-0"><Localized en="The finished exam project is a responsive website built with Astro, Tailwind CSS, Alpine.js and Supabase. It includes product filtering, product pages and a basket. As a team, we translated the Figma design into responsive layouts and components and validated the experience through testing. I coded half of the website as part of this shared implementation. Payment, order handling and full membership functionality were outside the scope, so the project demonstrates the shopping experience rather than a complete live webshop." da="Det færdige eksamensprojekt er et responsivt website bygget med Astro, Tailwind CSS, Alpine.js og Supabase. Det indeholder produktfiltrering, produktsider og kurv. I teamet omsatte vi Figma-designet til responsive layouts og komponenter og kvalificerede oplevelsen gennem tests. Jeg kodede halvdelen af websitet som en del af den fælles implementering. Betaling, ordrehåndtering og fuld medlemskabsfunktionalitet lå uden for afgrænsningen, så projektet demonstrerer købsoplevelsen frem for en komplet webshop i drift." /></Text>
+        </div>
+        <video data-scroll-video src="/video/tusindfryd_vid.mp4" poster="/img/tusindfryds/tusindfryds_1.webp" aria-label="A walkthrough of the Tusindfryd website" muted loop controls playsinline preload="metadata"></video>
+      </section>
+
+      <section class="case-gallery" aria-label="Images from case">
+        <div class="gallery-grid">
+          {gallery.map((item) => (
+            <div class:list={["gallery-item", { wide: item.wide }]}>
+              {item.image ? <img src={item.image} alt={item.alt} loading="lazy" /> : <div class="asset-placeholder"><Localized en={item.alt} /></div>}
+            </div>
+          ))}
+        </div>
+        <p class="gallery-caption"><Localized en="AI art direction — I created this image series in Adobe Firefly using Nano Banana, with a focus on composition, materials, lighting and visual consistency. I used AI as a creative tool to translate the project’s visual identity into a cohesive image universe, connecting individual scenes through a shared aesthetic. The series demonstrates how I combine design judgement with AI image generation to create visual content that supports a specific brand and concept." /></p>
+      </section>
+    </div>
+  </main>
+</MainLayout>
+
+<script>
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const video = entry.target as HTMLVideoElement;
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.4 && !reducedMotion.matches) {
+        void video.play().catch(() => {});
+ } else {
+        video.pause();
+ }
+ });
+ }, { threshold: [0, 0.4] });
+  document.querySelectorAll<HTMLVideoElement>("[data-scroll-video]").forEach((video) => observer.observe(video));
+  document.addEventListener("astro:before-swap", () => observer.disconnect(), { once: true });
+</script>
+
+<style>
+  .case-page { display: grid; grid-template-columns: 16% minmax(0, 1fr); gap: 24px; padding: 135px 0 90px; font-family: "Geist Mono", monospace; }
+  .case-info { position: sticky; top: 160px; align-self: start; min-height: min(600px, calc(100svh - 230px)); display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 50px 0 0; text-transform: uppercase; }
+  .case-info h1, .case-info p { margin: 0; }
+  .case-info :global(a) { width: fit-content; }
+  .case-info :global(.back-link) {  text-transform: none; }
+  .website-link { position: relative; width: fit-content; }
+  .case-info .website-note {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 2;
+    width: min(260px, calc(100vw - 32px));
+    margin: 0;
+    padding: 12px;
+    background: #e8e8e2;
+    border: 1px solid rgb(0 0 0 / 15%);
+    border-radius: 3px;
+    
+    
+    
+    text-transform: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 180ms ease, visibility 180ms ease;
+ }
+  .website-link:is(:hover, :focus-within) .website-note { opacity: 1; visibility: visible; }
+  @media (prefers-reduced-motion: reduce) { .case-info .website-note { transition: none; } }
+  .case-content { min-width: 0; }
+  .hero .section-copy { position: relative; left: -10px; }
+  .case-section { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; gap: 24px; margin-bottom: 64px; }
+  .hero-image { grid-column: 4 / -1; grid-row: 1; width: 100%; height: auto; display: block; }
+  .section-copy { grid-column: 1 / 6; grid-row: 1; z-index: 1; margin: 0;  max-width: 480px; }
+  .mockup-media { grid-column: 4 / -1; grid-row: 1; }
+  @media (min-width: 1001px) {
+    .mockup-section { column-gap: 5px; }
+    .mockup-section .section-copy { width: 100%; justify-self: end; }
+    .mockup-section[data-layout="mobile"] .mockup-media { grid-column: 7 / -1; }
+    .mockup-section[data-layout="mobile"] .section-copy { grid-column: 2 / 7; }
+    .mockup-section[data-layout="laptop"] .mockup-media { grid-column: 5 / -1; }
+    .mockup-section[data-layout="laptop"] .section-copy { grid-column: 1 / 5; }
+    .mockup-section[data-layout="tablet"] .mockup-media { grid-column: 8 / -1; }
+    .mockup-section[data-layout="tablet"] .section-copy { grid-column: 3 / 8; }
+ }
+  .mockup-heading {   text-transform: uppercase; margin: 0 0 20px; }
+  .mockup-media img { display: block; width: 100%; height: auto; }
+  .mockup-media .asset-placeholder { aspect-ratio: 4 / 3; }
+  .asset-placeholder { display: grid; place-items: center; background: #e8e8e2; color: #76766e; }
+  .walkthrough { scroll-margin-top: 130px; margin-top: 90px; }
+  .walkthrough .section-copy { grid-column: 1 / 4; }
+  .walkthrough h2 {   text-transform: uppercase; margin: 0 0 20px; }
+  .walkthrough video { grid-column: 4 / -1; grid-row: 1; display: block; width: 100%; height: auto; }
+  .case-gallery { margin: 130px 5% 0 0; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 32px clamp(16px, 4vw, 64px); }
+  .gallery-item { min-width: 0; height: clamp(110px, 14vw, 240px); }
+  .gallery-item.wide { grid-column: span 2; }
+  .gallery-item:last-child { grid-column: span 3; }
+  .gallery-item img, .gallery-item .asset-placeholder { width: 100%; height: 100%; object-fit: cover; }
+  .gallery-caption { max-width: 480px; margin: 20px 0 0 auto;   text-align: left; }
+  @media (min-width: 1500px) { .case-page { } }
+  @media (max-width: 1000px) {
+    .case-page { grid-template-columns: 20% minmax(0, 1fr); }
+    .hero-image { grid-column: 1 / -1; grid-row: 1; }
+    .section-copy { grid-column: 1 / -1; grid-row: 2; max-width: 100%; }
+    .mockup-media { grid-column: 1 / -1; }
+    .walkthrough video { grid-column: 1 / -1; }
+    .walkthrough .section-copy { grid-column: 1 / -1; }
+    .gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+    .gallery-item { height: 180px; }
+ }
+  @media (max-width: 640px) {
+    .case-page { display: block; padding: 140px 0 60px; }
+    .hero-image { aspect-ratio: 1 / 1; object-fit: cover; object-position: center; }
+    .hero .section-copy { left: 0; margin-top: -48px; }
+    .gallery-caption { max-width: none; margin-left: 0; margin-right: 0; }
+    .case-info { position: static; min-height: 0; padding: 0; display: grid; grid-template-columns: 1fr; align-items: baseline; gap: 16px; margin-bottom: 24px; }
+    .case-info br { display: none; }
+
+
+    .case-info > p:nth-child(2), .case-info .website-link { justify-self: start; text-align: left; }
+    .case-info :global(.back-link) { display: none; }
+    .case-info .website-note { left: 0; right: auto; text-align: left; }
+    .case-section { margin-bottom: 40px; gap: 24px; }
+    .mockup-media { grid-column: 1 / -1; }
+    .walkthrough { margin-top: 56px; }
+    .case-gallery { margin: 64px 0 0; }
+    .gallery-grid { gap: 16px; }
+    .gallery-item { height: 130px; }
+
+ }
+</style>

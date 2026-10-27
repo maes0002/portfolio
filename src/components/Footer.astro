@@ -1,25 +1,25 @@
 ---
+import Localized from "./Localized.astro";
 import Link from "./Link.astro";
 
 interface Props {
   instagramUrl?: string;
   linkedinUrl?: string;
 }
-const { instagramUrl = "https://www.instagram.com/majaestrup/", linkedinUrl = "https://www.linkedin.com/in/maja-estrup/" } = Astro.props;
+const { instagramUrl = "https://www.instagram.com/majasportfolio/", linkedinUrl = "https://www.linkedin.com/in/maja-estrup/" } = Astro.props;
 ---
 
 <footer class="site-footer">
-  <p class="availability"><span class="availability-dot" aria-hidden="true"></span>OPEN TO WORK</p>
-  <p class="collection">COLLECTION<br />OF MY WORK AND<br />PROJECTS, 2026</p>
+  <p class="availability"><span class="availability-dot" aria-hidden="true"></span><Localized en="OPEN TO JOBS & FREELANCE" da="ÅBEN FOR JOB OG FREELANCE" /></p>
 
-  <nav aria-label="Sociale medier">
+  <nav aria-label="Social media">
     <div class="social">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
         <rect x="3" y="3" width="18" height="18" rx="5"></rect>
         <circle cx="12" cy="12" r="4"></circle>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
       </svg>
-      <Link href={instagramUrl}>@MAJAESTRUP</Link>
+      <Link href={instagramUrl}>@MAJASPORTFOLIO</Link>
     </div>
     <div class="social">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
@@ -34,77 +34,25 @@ const { instagramUrl = "https://www.instagram.com/majaestrup/", linkedinUrl = "h
 
 <style>
   .site-footer {
-    position: fixed;
-    inset: auto 0 0;
-    z-index: 10;
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
-    gap: clamp(48px, 8.5vw, 150px);
-    padding: 22px;
+    position: relative;
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 24px;
+    padding: 32px var(--page-gutter);
+    width: min(100%, calc(var(--page-max-width) + 2 * var(--page-gutter)));
+    margin-inline: auto;
     font-family: "Geist Mono", monospace;
-    font-size: 13px;
-    font-weight: 500;
-    pointer-events: none;
+    font-size: 12px;
+    font-weight: 600;
   }
-
-  .collection {
-    margin: 0;
-    line-height: 1.15;
-  }
-  .availability {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 auto 0 0;
-    line-height: 1.4;
-    white-space: nowrap;
-  }
-  .availability-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #38764b;
-    flex-shrink: 0;
-  }
-  nav {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    pointer-events: auto;
-  }
-  .social {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    white-space: nowrap;
-  }
-  svg {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 900px) {
-    .site-footer {
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 16px;
-      font-size: 12px;
-      flex-wrap: wrap;
-    }
-    .availability { flex-basis: 100%; }
-    nav {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
-  }
-
-  @media (max-width: 360px) {
-    .site-footer {
-      flex-wrap: wrap;
-    }
+  .availability { display: flex; align-items: center; gap: 8px; margin: 0; line-height: 1.4; min-width: 0; }
+  .availability-dot { width: 7px; height: 7px; border-radius: 50%; background: #38764b; flex-shrink: 0; }
+  nav { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .social { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  svg { width: 16px; height: 16px; flex-shrink: 0; }
+  @media (max-width: 640px) {
+    .site-footer { gap: 16px; padding: 32px var(--page-gutter); font-size: 12px; }
   }
 </style>

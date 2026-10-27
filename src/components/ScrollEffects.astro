@@ -1,0 +1,71 @@
+<script>
+  import Lenis from "lenis";
+  import "lenis/dist/lenis.css";
+
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  let lenis: Lenis | undefined;
+  let observer: IntersectionObserver | undefined;
+  const selector = [
+    "main > header", ".project-copy", ".project-figure",
+    ".project-image-link", ".project-details", ".gallery-navigation", ".contact",
+    ".case-info", ".section-copy", ".hero-image", ".mockup-media",
+    ".walkthrough video", ".gallery-item", ".gallery-caption",
+    ".project-page > *", "main > img", ".site-footer",
+  ].join(", ");
+
+  function setup() {
+    lenis?.destroy();
+    observer?.disconnect();
+    const elements = document.querySelectorAll<HTMLElement>(selector);
+    elements.forEach((element) => element.classList.remove("reveal-pending"));
+    if (reducedMotion.matches) return;
+
+    lenis = new Lenis({
+      autoRaf: true,
+      duration: 1.1,
+      smoothWheel: true,
+      anchors: true,
+      prevent: (node) => node.classList.contains("gallery-track") || node.classList.contains("project-track"),
+    });
+
+    observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.remove("reveal-pending");
+        observer?.unobserve(entry.target);
+      });
+    }, { threshold: 0, rootMargin: "0px 0px -32px 0px" });
+
+    elements.forEach((element) => {
+      element.classList.add("scroll-reveal", "reveal-pending");
+      observer!.observe(element);
+    });
+  }
+
+  // Keyboard focus must never land on visually hidden content.
+  document.addEventListener("focusin", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const element = event.target.closest(".reveal-pending");
+    element?.classList.remove("reveal-pending");
+    if (element) observer?.unobserve(element);
+  });
+  reducedMotion.addEventListener("change", setup);
+  setup();
+</script>
+
+<style is:global>
+  html { scroll-padding-top: calc(var(--site-header-height, 72px) + 24px); }
+  html:not(.lenis) { scroll-behavior: smooth; }
+  .scroll-reveal {
+    transition: opacity 700ms ease, translate 850ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .reveal-pending { opacity: 0; translate: 0 20px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto !important; }
+    .scroll-reveal { transition: none; }
+    .reveal-pending { opacity: 1; translate: none; }
+  }
+  @media print {
+    .reveal-pending { opacity: 1; translate: none; }
+  }
+</style>

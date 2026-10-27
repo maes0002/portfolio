@@ -1,0 +1,29 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Text from "../../components/Text.astro";
+import Link from "../../components/Link.astro";
+import Localized from "../../components/Localized.astro";
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: "hojskolen" }, props: { title: "Højskolen", category: "Visual identity · Digital design · 2026", video: "/video/hojskolen_vid.mov" } },
+    { params: { slug: "project-3" }, props: { title: "Project name", category: "Concept · Art direction · 2026", video: undefined } },
+  ];
+}
+const { title, category, video } = Astro.props;
+---
+
+<MainLayout title={`${title} — Maja Estrup`}>
+  <main class="project-page">
+    <Link href="/school-projects"><Localized en="← School projects" /></Link>
+    <Text as="h1" teksttype="h1" class="mt-10 mb-6"><Localized en={title} /></Text>
+    <Text as="p" teksttype="p" class="mb-10"><Localized en={category} /></Text>
+    {video && <video class="block w-full h-auto" src={video} controls playsinline preload="metadata" aria-label={title}></video>}
+    <Text as="p" teksttype="p" class="mt-10"><Localized en="Project details coming soon." da="Projektbeskrivelse kommer snart." /></Text>
+  </main>
+</MainLayout>
+
+<style>
+  .project-page { margin: 0 auto; padding: 160px 0 100px; }
+  @media (max-width: 640px) { .project-page { padding-top: 140px; } }
+</style>

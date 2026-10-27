@@ -2,11 +2,12 @@
 interface Props {
   video?: string;
   image?: string;
+  opacity?: number;
 }
-const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png" } = Astro.props;
+const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1 } = Astro.props;
 ---
 
-<div class="liquid-background" data-liquid-background data-video={video} aria-hidden="true" style={{ backgroundImage: `url("${image}")` }}>
+<div class="liquid-background" data-liquid-background data-video={video} aria-hidden="true" style={{ backgroundImage: `url("${image}")`, opacity }}>
   <video src={video} poster={image} muted loop playsinline preload="metadata" tabindex="-1"></video>
   <canvas></canvas>
 </div>

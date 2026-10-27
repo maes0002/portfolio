@@ -1,10 +1,9 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import Text from "../components/Text.astro";
 ---
 
-<MainLayout title="forside">
-  <main class="min-h-screen flex items-center justify-center">
-    <img src="public/svg/logo.svg" alt="logo" class="w-[60px] h-[30px] ml-7" />
+<MainLayout title="Home — Maja Estrup" liquidBackground={true} liquidOpacity={1}>
+  <main class="flex items-center justify-center">
+    <img src="/svg/logo.svg" alt="Maja Estrup" class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[60px] h-auto" />
   </main>
 </MainLayout>

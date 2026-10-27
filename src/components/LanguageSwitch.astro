@@ -1,0 +1,82 @@
+<div class="language-switch" role="group" aria-label="Language / Sprog">
+  <button type="button" data-language="da" aria-pressed="false" aria-label="Dansk">DA</button>
+  <span aria-hidden="true">/</span>
+  <button type="button" data-language="en" aria-pressed="true" aria-label="English">EN</button>
+</div>
+
+<script>
+  import { danish } from "../lib/translations";
+  const originalAttributes = new WeakMap<Element, Map<string, string>>();
+  let language: "da" | "en" = "en";
+  try {
+    if (localStorage.getItem("portfolio-language") === "da") language = "da";
+  } catch {}
+  function applyLanguage() {
+    document.documentElement.lang = language;
+    document.querySelectorAll<HTMLElement>("[data-language-en]").forEach((element) => {
+      element.textContent = element.dataset[language === "da" ? "languageDa" : "languageEn"] ?? "";
+    });
+    document.querySelectorAll("[aria-label], [alt]").forEach((element) => {
+      if (element.closest(".language-switch")) return;
+      let originals = originalAttributes.get(element);
+      if (!originals) {
+        originals = new Map();
+        for (const attr of ["aria-label", "alt"]) {
+          const value = element.getAttribute(attr);
+          if (value !== null) originals.set(attr, value);
+        }
+        originalAttributes.set(element, originals);
+      }
+      originals.forEach((value, attr) => element.setAttribute(attr, language === "da" ? danish(value) : value));
+    });
+    const title = document.querySelector<HTMLMetaElement>('meta[name="original-title"]')?.content;
+    if (title) document.title = language === "da" ? danish(title) : title;
+    document.querySelectorAll<HTMLButtonElement>("[data-language]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.language === language));
+    });
+  }
+  document.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button[data-language]") : null;
+    if (!button) return;
+    language = button.dataset.language === "da" ? "da" : "en";
+    try {
+      localStorage.setItem("portfolio-language", language);
+    } catch {}
+    applyLanguage();
+  });
+  applyLanguage();
+  document.addEventListener("astro:page-load", applyLanguage);
+</script>
+
+<style>
+  .language-switch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "Geist Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    white-space: nowrap;
+  }
+  button {
+    padding: 4px 2px;
+    opacity: 0.45;
+    transition: opacity 180ms;
+  }
+  button[aria-pressed="true"],
+  button:hover {
+    opacity: 1;
+  }
+  button[aria-pressed="true"] {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  button:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 3px;
+  }
+  .language-switch > span {
+    opacity: 0.35;
+  }
+</style>
