@@ -1,0 +1,129 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Localized from "../../components/Localized.astro";
+import Text from "../../components/Text.astro";
+import ProjectSidebar from "../../components/ProjectSidebar.astro";
+---
+
+<MainLayout title="Internship — Maja Estrup">
+  <main class="internship-page">
+    <ProjectSidebar>
+      <span slot="title"><Localized en="Internship" da="Praktikforløb" /></span>
+      <span slot="category">SoMe and<br /> graphic design</span>
+      <span slot="period"><Localized en="February–March" da="Februar–marts" /></span>
+    </ProjectSidebar>
+    <div class="internship-content">
+    <section class="gueri-section" aria-labelledby="gueri-title">
+
+      <div class="gueri-media">
+        <Text as="h2" teksttype="h2" id="gueri-title" class="brand-title">GUÉRI</Text>
+        <div class="gueri-grid">
+          <video src="/video/gueri_vid.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="GUÉRI — digital content"></video>
+          <img src="/img/gueri/gueri_2.webp" alt="GUÉRI — skincare content" loading="lazy" />
+          <img src="/img/gueri/gueri_3.webp" alt="GUÉRI — social media design" loading="lazy" />
+        </div>
+      </div>
+      <div class="case-copy gueri-copy">
+        <Text as="p" teksttype="h2" class="services">Graphic design / AI content / Content creation / SoMe management / Meta / Strategi</Text>
+        <Text as="p" teksttype="p"><Localized
+          en="During my internship, I worked on GUÉRI Skin Sciences’ digital presence through content creation, social media management, Meta advertising, and strategic planning. With a focus on the brand’s visual identity and audience, I helped develop engaging content and strengthen its communication on social media."
+          da="Under min praktikperiode arbejdede jeg med GUÉRI Skin Sciences’ digitale tilstedeværelse gennem content creation, SoMe management, Meta-annoncering og strategisk planlægning. Med fokus på brandets visuelle identitet og målgruppe var jeg med til at udvikle engagerende indhold og styrke brandets kommunikation på sociale medier." /></Text>
+      </div>
+    </section>
+
+    <section class="tiger-section" aria-labelledby="tiger-title">
+      <figure class="tiger-first">
+        <Text as="h2" teksttype="h2" id="tiger-title" class="brand-title">Flying Tiger</Text>
+        <video src="/video/FT_1.mov" autoplay muted loop playsinline controls preload="metadata" aria-label="Flying Tiger — content creation"></video>
+      </figure>
+      <div class="case-copy tiger-copy">
+        <Text as="p" teksttype="h2" class="services">Content creation / Editing</Text>
+        <Text as="p" teksttype="p"><Localized
+          en="Selected video content for Flying Tiger, created during my internship. My work focused on content creation and editing, bringing products into everyday settings through visual storytelling."
+          da="Udvalgt videoindhold til Flying Tiger, skabt under mit praktikforløb. Jeg arbejdede med content creation og redigering med fokus på at bringe produkterne ind i hverdagens rammer gennem visuel historiefortælling." /></Text>
+      </div>
+      <video class="tiger-second" src="/video/FT_2.mov" autoplay muted loop playsinline controls preload="metadata" aria-label="Flying Tiger — edited video"></video>
+    </section>
+
+    <section class="okholm-section" aria-labelledby="okholm-title">
+      <div class="okholm-media">
+        <Text as="h2" teksttype="h2" id="okholm-title" class="brand-title">Okholm Studio</Text>
+        <div class="okholm-pair">
+          <video src="/video/okholm_1.mov" autoplay muted loop playsinline controls preload="metadata" aria-label="Okholm Studio — content 1"></video>
+          <video src="/video/okholm_2.mov" autoplay muted loop playsinline controls preload="metadata" aria-label="Okholm Studio — content 2"></video>
+        </div>
+      </div>
+      <div class="case-copy okholm-copy">
+        <Text as="p" teksttype="h2" class="services">Content creation / Editing / Photo editing</Text>
+        <Text as="p" teksttype="p"><Localized
+          en="A selection of content for Okholm Studio from my internship, with a focus on content creation, video editing, and photo editing to create a cohesive visual expression for social media."
+          da="Et udvalg af indhold til Okholm Studio fra mit praktikforløb med fokus på content creation, videoredigering og billedredigering for at skabe et sammenhængende visuelt udtryk til sociale medier." /></Text>
+      </div>
+      <video class="okholm-third" src="/video/okholm_3.mov" autoplay muted loop playsinline controls preload="metadata" aria-label="Okholm Studio — content 3"></video>
+    </section>
+
+    <section class="selume-section" aria-labelledby="selume-title">
+      <div class="case-copy selume-copy">
+        <Text as="p" teksttype="h2" class="services">Graphic design / Content creation / Meta ads</Text>
+        <Text as="p" teksttype="p"><Localized
+          en="Selected work for Selume from my internship, with a focus on graphic design, content creation, and Meta ads."
+          da="Udvalgt arbejde til Selume fra mit praktikforløb med fokus på grafisk design, content creation og Meta-annoncering." /></Text>
+      </div>
+      <div class="selume-media">
+        <Text as="h2" teksttype="h2" id="selume-title" class="brand-title">Selume</Text>
+        <div class="selume-pair">
+          <div class="media-placeholder" role="img" aria-label="Selume — content coming soon"></div>
+          <div class="media-placeholder" role="img" aria-label="Selume — content coming soon"></div>
+        </div>
+      </div>
+    </section>
+    </div>
+  </main>
+</MainLayout>
+
+<style>
+  .internship-page { display: grid; grid-template-columns: 16% minmax(0, 1fr); gap: 24px; padding: 135px 0 90px; }
+  .internship-content { min-width: 0; }
+  section { min-width: 0; }
+  figure { margin: 0; min-width: 0; }
+  img, video { display: block; width: 100%; min-width: 0; height: 100%; object-fit: cover; }
+  video { clip-path: inset(1px); }
+  :global(.brand-title) { margin: 0 0 10px; text-transform: uppercase; }
+  .case-copy :global(p) { margin: 0; }
+  .case-copy :global(.services) { margin-bottom: 20px; text-transform: uppercase; }
+  .gueri-section { display: grid; grid-template-columns: minmax(0, 1fr); gap: 55px; }
+  .gueri-grid { display: grid; grid-template-columns: 2.4fr 1fr 1fr; gap: 30px; align-items: stretch; }
+  .gueri-grid video { aspect-ratio: 16 / 9; height: auto; }
+  .gueri-grid img { object-fit: cover; }
+  .gueri-copy { grid-column: 1 / -1; margin-left: 14%; max-width: 610px; }
+  .tiger-section { display: grid; grid-template-columns: .9fr 1fr 1.17fr; align-items: end; gap: 40px; margin: 150px 0 0 14%; }
+  .tiger-first video { aspect-ratio: 5 / 6; height: auto; }
+  .tiger-first { align-self: start; }
+  .tiger-second { aspect-ratio: 5 / 6; height: auto; }
+  .okholm-section { display: grid; grid-template-columns: 1.65fr 1fr; gap: 60px 45px; margin: 150px 0 0 26%; align-items: end; }
+  .okholm-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 45px; }
+  .okholm-pair video { aspect-ratio: 4 / 5; height: auto; }
+  .okholm-third { grid-column: 2; aspect-ratio: 4 / 5; height: auto; }
+  .selume-section { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin: 150px 0 0 22%; align-items: end; }
+  .selume-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .media-placeholder { aspect-ratio: 2 / 3; background: white; }
+  @media (max-width: 1000px) and (min-width: 641px) {
+    .internship-page { grid-template-columns: 20% minmax(0, 1fr); }
+    .gueri-grid { gap: 16px; }
+    .tiger-section, .okholm-section, .selume-section { margin-left: 8%; gap: 24px; }
+    .okholm-pair { gap: 20px; }
+  }
+  @media (max-width: 640px) {
+    .internship-page { display: block; padding: 140px 0 60px; }
+    .gueri-section, .tiger-section, .okholm-section, .selume-section { display: grid; grid-template-columns: 1fr; gap: 30px; margin: 0; }
+    .tiger-section, .okholm-section, .selume-section { margin-top: 80px; }
+    .gueri-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+    .gueri-grid video { grid-column: 1 / -1; }
+    .gueri-grid img { height: auto; aspect-ratio: 4 / 5; }
+    .gueri-copy { grid-column: 1; margin: 0; }
+    .okholm-pair { gap: 15px; }
+    .okholm-third { grid-column: 1; }
+    .selume-media { grid-row: 1; }
+    .selume-pair { gap: 15px; }
+  }
+</style>

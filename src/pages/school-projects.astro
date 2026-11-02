@@ -12,13 +12,14 @@ interface Project {
   descriptionDa?: string;
   featured: boolean;
   image?: string;
+  video?: string;
   alt?: string;
   href: string;
 }
 
 const projects: Project[] = [
   { number: "01", title: "Tusindfryd", category: "Digital Design · Website Development · Content Creation · 2026", description: "A webshop redesign that brings a curated vintage collection into focus through a clear visual identity and a considered shopping experience.", descriptionDa: "Et webshop-redesign, der fremhæver kuraterede vintagemøbler gennem en tydelig visuel identitet og en gennemtænkt købsoplevelse.", featured: true, image: "/img/tusindfryds/tusindfryds_3.webp", alt: "A preview of the Tusindfryd website", href: "/school-projects/tusindfryd" },
-  { number: "02", title: "Højskolen", category: "Visual identity · Digital design · 2026", featured: false, alt: "A preview of the Højskolen project", href: "/school-projects/hojskolen" },
+  { number: "02", title: "Internship — Graphic design & social media", category: "Graphic design · Social media · Internship · 2026", description: "Selected graphic design and social media content from my internship, including work for GUÉRI, Flying Tiger, Okholm Studio, and Selume.", descriptionDa: "Udvalgt grafisk arbejde og indhold til sociale medier fra mit praktikforløb, blandt andet for GUÉRI, Flying Tiger, Okholm Studio og Selume.", featured: false, image: "/img/internship.webp", alt: "Selected graphic design and social media work from my internship", href: "/school-projects/internship" },
   { number: "03", title: "Project name", category: "Concept · Art direction · 2026", featured: false, href: "/school-projects/project-3" },
 ];
 ---
@@ -38,7 +39,9 @@ const projects: Project[] = [
         {projects.map((project) => (
           <article class="project">
             <Link href={project.href} variant="image" class="project-image-link" aria-label={`View ${project.title} project`}>
-              {project.image ? (
+              {project.video ? (
+                <video class="project-image" src={project.video} autoplay muted loop playsinline preload="metadata" aria-label={project.alt}></video>
+              ) : project.image ? (
                 <img class="project-image" src={project.image} alt={project.alt} />
               ) : (
                 <div class="image-placeholder" role="img" aria-label={`Image placeholder for school project ${project.number}`}>

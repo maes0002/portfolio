@@ -3,6 +3,7 @@ import Link from "../../components/Link.astro";
 import Localized from "../../components/Localized.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import Text from "../../components/Text.astro";
+import ProjectSidebar from "../../components/ProjectSidebar.astro";
 
 const mockups = [
   {
@@ -33,16 +34,15 @@ const gallery: { image: string; alt: string; wide?: boolean }[] = [1, 2, 3, 4, 5
 
 <MainLayout title="Tusindfryd — Maja Estrup" liquidBackground={true} liquidOpacity={0.15}>
   <main class="case-page">
-    <aside class="case-info" aria-label="Project information">
-      <Text as="h1" teksttype="p_semib" class="m-0"><Localized en="Case:" /><br /> Tusindfryd</Text>
-      <Text as="p" teksttype="p_semib" class="m-0"><Localized en="Website" /><br /> <Localized en="redesign" /></Text>
-      <Text as="p" teksttype="p_semib" class="m-0"><Localized en="Final exam" /><br /> / 2026</Text>
-      <div class="website-link">
+    <ProjectSidebar>
+      <span slot="title"><Localized en="Case:" /><br /> Tusindfryd</span>
+      <span slot="category"><Localized en="Website" /><br /> <Localized en="redesign" /></span>
+      <span slot="period"><Localized en="Final exam" /><br /> / 2026</span>
+      <div slot="website" class="website-link">
         <Link href="https://tusindfryd.netlify.app/" target="_blank" rel="noopener noreferrer" aria-describedby="website-note"><Localized en="Visit website ↗" da="Se websitet ↗" /></Link>
         <p id="website-note" class="website-note type-p-thinner" role="tooltip"><Localized en="Product images may be unavailable because the Supabase project is paused after a period of inactivity." da="Produktbilleder kan mangle, da Supabase-projektet er sat på pause efter en periode uden aktivitet." /></p>
       </div>
-      <Link class="back-link" href="/school-projects"><Localized en="← School projects" /></Link>
-    </aside>
+    </ProjectSidebar>
 
     <div class="case-content">
       <section class="case-section hero" aria-label="Project introduction">
@@ -102,32 +102,6 @@ const gallery: { image: string; alt: string; wide?: boolean }[] = [1, 2, 3, 4, 5
 
 <style>
   .case-page { display: grid; grid-template-columns: 16% minmax(0, 1fr); gap: 24px; padding: 135px 0 90px; font-family: "Geist Mono", monospace; }
-  .case-info { position: sticky; top: 160px; align-self: start; min-height: min(600px, calc(100svh - 230px)); display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 50px 0 0; text-transform: uppercase; }
-  .case-info h1, .case-info p { margin: 0; }
-  .case-info :global(a) { width: fit-content; }
-  .case-info :global(.back-link) {  text-transform: none; }
-  .website-link { position: relative; width: fit-content; }
-  .case-info .website-note {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 2;
-    width: min(260px, calc(100vw - 32px));
-    margin: 0;
-    padding: 12px;
-    background: #e8e8e2;
-    border: 1px solid rgb(0 0 0 / 15%);
-    border-radius: 3px;
-    
-    
-    
-    text-transform: none;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 180ms ease, visibility 180ms ease;
- }
-  .website-link:is(:hover, :focus-within) .website-note { opacity: 1; visibility: visible; }
-  @media (prefers-reduced-motion: reduce) { .case-info .website-note { transition: none; } }
   .case-content { min-width: 0; }
   .hero .section-copy { position: relative; left: -10px; }
   .case-section { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; gap: 24px; margin-bottom: 64px; }
@@ -175,13 +149,6 @@ const gallery: { image: string; alt: string; wide?: boolean }[] = [1, 2, 3, 4, 5
     .hero-image { aspect-ratio: 1 / 1; object-fit: cover; object-position: center; }
     .hero .section-copy { left: 0; margin-top: -48px; }
     .gallery-caption { max-width: none; margin-left: 0; margin-right: 0; }
-    .case-info { position: static; min-height: 0; padding: 0; display: grid; grid-template-columns: 1fr; align-items: baseline; gap: 16px; margin-bottom: 24px; }
-    .case-info br { display: none; }
-
-
-    .case-info > p:nth-child(2), .case-info .website-link { justify-self: start; text-align: left; }
-    .case-info :global(.back-link) { display: none; }
-    .case-info .website-note { left: 0; right: auto; text-align: left; }
     .case-section { margin-bottom: 40px; gap: 24px; }
     .mockup-media { grid-column: 1 / -1; }
     .walkthrough { margin-top: 56px; }

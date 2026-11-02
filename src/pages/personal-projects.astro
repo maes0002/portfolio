@@ -20,10 +20,10 @@ const projects: PersonalProject[] = [
   {
     number: "01",
     title: "Volta",
-    description: "An independently created magazine.",
-    descriptionDa: "Et personligt magasinprojekt.",
-    note: "Editorial design · Magazine",
-    noteDa: "Editorial design · Magasin",
+    description: "VOLTA is a personal magazine project, born from my passion for editorial design and the joy of creating something beautiful through the interplay of imagery, typography, and composition. The inspiration comes from the idea of slowing down, being present in the moment, and finding beauty in simplicity. With VOLTA, I wanted to create an aesthetic world where the visuals take centre stage and every page is a composition in its own right. The project is also a tribute to the physical and sensory — to the unique experience of leafing through a magazine, which cannot quite be recreated digitally.",
+    descriptionDa: "VOLTA er et personligt magasinprojekt, skabt ud fra min passion for editorial design og glæden ved at skabe noget smukt gennem samspillet mellem billeder, typografi og komposition. Inspirationen kommer fra tanken om at sætte tempoet ned, være til stede i nuet og finde skønheden i det enkle. Med VOLTA ønskede jeg at skabe et æstetisk univers, hvor det visuelle får lov til at være i centrum, og hvor hver side er en komposition i sig selv. Projektet er samtidig en hyldest til det fysiske og sanselige – til den særlige oplevelse ved at bladre gennem et magasin, som ikke helt kan genskabes digitalt.",
+    note: "This is an independent creative concept project, created to explore editorial design, visual aesthetics, and composition.",
+    noteDa: "Dette er et selvstændigt, kreativt konceptprojekt, skabt med fokus på at udforske editorial design, visuel æstetik og komposition.",
     images: [{ offset: 0, count: 4 }, { offset: 4, count: 3 }].map(({ offset, count }) => ({
       src: `/img/volta/volta_${offset + 1}.webp`,
       alt: `Volta — ${offset + 1}`,
@@ -54,13 +54,26 @@ const projects: PersonalProject[] = [
   },
   {
     number: "03",
-    title: "La Dolce Vita Cardgame",
+    title: "LA DOLCE VITA — A CARD GAME",
+    description: "La Dolce Vita is a personal playing card project, inspired by countless summers in Southern Italy and a love of Italian holiday life. With this deck, I wanted to capture that special feeling of long, warm summer evenings, the sound of the sea, and the taste of Aperol in the sun. Through a blend of personal holiday memories and evocative photographs, I created my own interpretation of the classic deck of cards, where each card tells a small part of the story. The aim was to create more than just a deck of cards — a personal design object that evokes memories, invites us to be present, and brings a little la dolce vita into everyday life.",
+    descriptionDa: "La Dolce Vita er et personligt kortspilsprojekt, inspireret af utallige somre i Syditalien og kærligheden til det italienske ferieliv. Med kortspillet ønskede jeg at indfange den helt særlige følelse af lange, varme sommeraftener, lyden af havet og smagen af Aperol i solen. Gennem en blanding af personlige ferieminder og stemningsfulde fotografier har jeg skabt min egen fortolkning af det klassiske kortspil, hvor hvert kort fortæller en lille del af historien. Målet var at skabe mere end blot et kortspil – et personligt designobjekt, der vækker minder, inviterer til nærvær og bringer en lille smule af la dolce vita ind i hverdagen.",
+    note: "This is an independent concept project, created from personal holiday memories and a love of graphic design.",
+    noteDa: "Dette er et selvstændigt konceptprojekt, skabt ud fra personlige ferieminder og en kærlighed til grafisk design.",
     images: [
-      { src: "/video/kortspil.mp4", alt: "La Dolce Vita Cardgame — video", video: true },
-      { src: "", alt: "" },
+      { src: "/video/cardgame.mp4", alt: "La Dolce Vita — kortspil, video", video: true },
+      {
+        src: "/img/kortspil/cardgame.webp",
+        alt: "La Dolce Vita — kortspil",
+      },
     ],
   },
-  { number: "04", images: [{ src: "", alt: "" }, { src: "", alt: "" }] },
+  {
+    number: "04",
+    images: [
+      { src: "/img/plakat_1.webp", alt: "Plakat 1 — personligt projekt 04" },
+      { src: "/img/plakat_2.webp", alt: "Plakat 2 — personligt projekt 04" },
+    ],
+  },
   { number: "05", images: [{ src: "", alt: "" }, { src: "", alt: "" }] },
 ];
 ---
@@ -73,12 +86,12 @@ const projects: PersonalProject[] = [
     </header>
     <div class="personal-projects">
       {projects.map((project, index) => (
-        <article class="personal-project" data-layout={index + 1} aria-labelledby={`personal-project-${project.number}`}>
+        <article class:list={["personal-project", { "has-media-controls": (project.images[0]?.slides?.length ?? 0) > 1 }]} data-layout={index + 1} aria-labelledby={`personal-project-${project.number}`}>
           <div class="project-copy">
             <div>
               <Text as="p" teksttype="h2" class="project-number">NO {project.number}.</Text>
               <Text as="h2" teksttype="h2" id={`personal-project-${project.number}`} class="project-title"><Localized en={project.title ?? `Project ${project.number}`} da={project.title ?? `Projekt ${project.number}`} /></Text>
-              <Text as="p" teksttype="p" class="project-description"><Localized en={project.description ?? "Project description coming soon."} da={project.descriptionDa ?? "Projektbeskrivelse kommer snart."} /></Text>
+              <Text as="p" teksttype="p" class="project-description">{project.number === "03" ? <><Localized en={project.description!.split("la dolce vita")[0]} da={project.descriptionDa!.split("la dolce vita")[0]} /><em>la dolce vita</em><Localized en={project.description!.split("la dolce vita")[1]} da={project.descriptionDa!.split("la dolce vita")[1]} /></> : <Localized en={project.description ?? "Project description coming soon."} da={project.descriptionDa ?? "Projektbeskrivelse kommer snart."} />}</Text>
               {project.href && <Link class="project-link" href={project.href}><Localized en="View project" da="Se projektet" /></Link>}
             </div>
             <Text as="p" teksttype="p_italic" class="project-note"><Localized en={project.note ?? "Project notes coming soon."} da={project.noteDa ?? "Projektnoter kommer snart."} /></Text>
@@ -96,15 +109,17 @@ const projects: PersonalProject[] = [
                         <img src={slide.src} alt={slide.alt} loading="lazy" draggable="false" />
                       ))}
                     </div>
-                    <div class="gallery-controls">
+                    {image.slides.length > 1 && <div class="gallery-controls">
                       <button type="button" data-direction="-1" aria-label="Forrige billede / Previous image">←</button>
                       <span class="gallery-count" aria-live="polite" aria-atomic="true">1 / {image.slides.length}</span>
                       <button type="button" data-direction="1" aria-label="Næste billede / Next image">→</button>
-                    </div>
+                    </div>}
                   </div>
-                ) : <Media {...mediaProps} class:list={["project-media", { "video-media": image.video }]}>
+                ) : <div class="project-gallery single-media-gallery">
+                <Media {...mediaProps} class:list={["project-media", { "video-media": image.video }]}>
                   {image.video ? <video src={image.src} autoplay muted loop controls playsinline preload="metadata" aria-label={image.alt}></video> : image.src ? <img src={image.src} alt={image.alt} loading="lazy" /> : <div class="image-placeholder" role="img" aria-label={`Image placeholder for personal project ${project.number}`}></div>}
-                </Media>}
+                </Media>
+                </div>}
               </figure>
             );
           })}
@@ -115,28 +130,13 @@ const projects: PersonalProject[] = [
 </MainLayout>
 
 <script>
-  const autoScrollInterval = 4000;
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
   document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((gallery) => {
     const track = gallery.querySelector<HTMLElement>(".gallery-track")!;
     const count = gallery.querySelector<HTMLElement>(".gallery-count")!;
     const buttons = gallery.querySelectorAll<HTMLButtonElement>("button[data-direction]");
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const pause = () => window.clearTimeout(timer);
-    const scheduleNext = () => {
-      pause();
-      if (reducedMotion.matches || document.hidden || gallery.matches(":hover, :focus-within") || track.children.length < 2) return;
-      timer = window.setTimeout(() => {
-        const index = Math.round(track.scrollLeft / track.clientWidth);
-        const nextIndex = (index + 1) % track.children.length;
-        track.scrollTo({ left: nextIndex * track.clientWidth, behavior: "smooth" });
-        scheduleNext();
-      }, autoScrollInterval);
-    };
     const update = () => {
       const index = Math.round(track.scrollLeft / track.clientWidth);
-      count.textContent = `${index + 1} / ${track.children.length}`;
+      if (count) count.textContent = `${index + 1} / ${track.children.length}`;
       buttons.forEach((button) => {
         button.disabled = Number(button.dataset.direction) < 0 ? index === 0 : index === track.children.length - 1;
       });
@@ -145,21 +145,8 @@ const projects: PersonalProject[] = [
       const index = Math.round(track.scrollLeft / track.clientWidth);
       track.scrollTo({ left: (index + Number(button.dataset.direction)) * track.clientWidth, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
     }));
-    track.addEventListener("scroll", () => {
-      update();
-      scheduleNext();
-    }, { passive: true });
-    gallery.addEventListener("mouseenter", pause);
-    gallery.addEventListener("mouseleave", scheduleNext);
-    gallery.addEventListener("focusin", pause);
-    gallery.addEventListener("focusout", () => requestAnimationFrame(scheduleNext));
-    gallery.addEventListener("touchstart", pause, { passive: true });
-    gallery.addEventListener("touchend", scheduleNext, { passive: true });
-    gallery.addEventListener("touchcancel", scheduleNext, { passive: true });
-    document.addEventListener("visibilitychange", scheduleNext);
-    reducedMotion.addEventListener("change", scheduleNext);
+    track.addEventListener("scroll", update, { passive: true });
     update();
-    scheduleNext();
   });
 </script>
 
@@ -170,13 +157,14 @@ const projects: PersonalProject[] = [
   .personal-projects { display: grid; gap: clamp(64px, 7vw, 110px); }
   .personal-project { display: grid; grid-template-columns: 1fr 1fr .85fr; gap: 25px; align-items: start; }
   .project-copy { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; align-self: stretch; min-width: 0; }
-  .project-copy :global(.project-number) { margin: 0 0 25px; }
+  .project-copy :global(.project-number) { margin: 0 0 15px; }
   .project-copy :global(.project-title) { margin: 0 0 10px; text-transform: uppercase; }
   .project-copy :global(.project-description) { margin: 0; max-width: 310px; }
   .project-copy :global(.project-link) { margin-top: 15px; }
-  .project-copy :global(.project-note) { margin: auto 0 0; max-width: 210px; padding-top: 48px; }
+  .project-copy :global(.project-note) { margin: auto 0 0; max-width: 210px; padding-top: 48px; font-size: 10px; }
+  .has-media-controls .project-copy { padding-bottom: 33px; }
   .project-figure { margin: 0; min-width: 0; grid-row: 1; }
-  .project-figure :global(.image-number) { margin: 0 0 15px; }
+  .project-figure :global(.image-number) { margin: 0 0 15px; font-size: 10px; }
   .primary-image { grid-column: 2; }
   .secondary-image { grid-column: 3; }
   .project-figure :global(.project-media) { display: block; overflow: hidden; aspect-ratio: 4 / 5; }
@@ -188,8 +176,9 @@ const projects: PersonalProject[] = [
   .gallery-track::-webkit-scrollbar { display: none; }
   .gallery-track img { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; object-fit: contain; }
   .gallery-track:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
-  .gallery-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; font-size: 12px; }
-  .gallery-controls button { border: 0; background: transparent; color: inherit; cursor: pointer; min-width: 44px; min-height: 44px; font-size: 22px; }
+  .gallery-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 5px; font-size: 12px; }
+  .gallery-controls button { display: flex; align-items: center; justify-content: flex-start; border: 0; padding: 0; background: transparent; color: inherit; cursor: pointer; width: 28px; height: 28px; font-size: 16px; line-height: 1; }
+  .gallery-controls button[data-direction="1"] { justify-content: flex-end; }
   .gallery-controls button:disabled { opacity: .25; cursor: default; }
   .gallery-controls button:focus-visible { outline: 2px solid currentColor; }
   .image-placeholder { width: 100%; height: 100%; background: #cecece; }
@@ -197,25 +186,46 @@ const projects: PersonalProject[] = [
   [data-layout="2"] .project-copy { grid-column: 2; }
   [data-layout="2"] .secondary-image :global(.project-media) { aspect-ratio: 1 / 1; }
   [data-layout="3"] .primary-image :global(.project-media) { aspect-ratio: 8 / 9; }
-  [data-layout="3"] .primary-image :global(.project-media.video-media) { aspect-ratio: 9 / 16; width: 55%; margin-inline: auto; }
-  [data-layout="3"] .video-media video { height: 100%; object-fit: contain; }
+  [data-layout="3"] .primary-image :global(.project-media.video-media) { aspect-ratio: 8 / 9; width: 100%; margin-inline: auto; }
+  [data-layout="3"] .primary-image .single-media-gallery .gallery-controls { width: 100%; margin-inline: auto; }
+  [data-layout="3"] .video-media video { height: 100%; object-fit: cover; object-position: center; }
   [data-layout="3"] .secondary-image :global(.project-media) { aspect-ratio: .85 / 1.125; }
   [data-layout="4"] { grid-template-columns: .85fr 1fr 1fr; }
   [data-layout="4"] .project-copy { grid-column: 3; }
   [data-layout="4"] .secondary-image { grid-column: 1; }
-  [data-layout="4"] .secondary-image :global(.project-media) { aspect-ratio: 1 / 1; }
+  [data-layout="4"] .project-figure :global(.project-media) { aspect-ratio: auto; }
+  [data-layout="4"] .project-media img { width: 100%; height: auto; object-fit: contain; }
   @media (hover: hover) and (pointer: fine) { :global(a.project-media:hover) img { transform: scale(1.025); } }
   :global(a.project-media:focus-visible) img { transform: scale(1.025); }
   @media (prefers-reduced-motion: reduce) { .project-media img { transition: none; transform: none !important; } }
   @media (min-width: 641px) and (max-width: 900px) { .personal-project { gap: 16px; } }
+  @media (min-width: 641px) {
+    .project-copy :global(.project-note) { max-width: 310px; }
+    [data-layout="1"] .secondary-image :global(.project-media) { aspect-ratio: 1.1 / 1; }
+    [data-layout="1"] .secondary-image .gallery-track img { object-fit: cover; }
+    [data-layout="2"] .primary-image :global(.project-media.video-media) { aspect-ratio: 4 / 5; }
+    [data-layout="2"] .primary-image video { height: 100%; object-fit: cover; }
+    [data-layout="2"] .secondary-image :global(.project-media) { aspect-ratio: 1 / 1; }
+    [data-layout="2"] .gallery-track img { object-fit: cover; }
+    [data-layout="3"] .primary-image :global(.project-media.video-media) { width: 100%; aspect-ratio: 8 / 9; }
+    [data-layout="3"] .primary-image .single-media-gallery .gallery-controls { width: 100%; }
+    [data-layout="3"] .secondary-image :global(.project-media) { aspect-ratio: .85 / .9; }
+    [data-layout="3"] .gallery-track img { object-fit: cover; }
+  }
   @media (max-width: 640px) {
     .personal-page { padding: 160px 0 80px; }
     .personal-projects { gap: 64px; }
     .personal-project, [data-layout="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
-    .personal-project .project-copy { grid-column: 1 / -1; grid-row: 1; }
+    .personal-project .project-copy { grid-column: 1 / -1; grid-row: 1; padding-bottom: 0; }
     .project-copy :global(.project-number) { margin-bottom: 16px; }
     .project-copy :global(.project-note) { padding-top: 16px; }
     .personal-project .primary-image { grid-column: 1; grid-row: 2; }
     .personal-project .secondary-image { grid-column: 2; grid-row: 2; }
+    [data-layout="1"] .project-figure :global(.project-media) { aspect-ratio: 4 / 5; }
+    [data-layout="2"] { row-gap: 15px; }
+    [data-layout="2"] .primary-image { grid-column: 1 / -1; }
+    [data-layout="2"] .secondary-image { grid-column: 1 / -1; grid-row: 3; }
+    [data-layout="3"] .primary-image :global(.project-media.video-media) { width: 100%; }
+    [data-layout="3"] .primary-image .single-media-gallery .gallery-controls { width: 100%; }
   }
 </style>

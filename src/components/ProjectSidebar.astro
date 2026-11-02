@@ -1,0 +1,30 @@
+---
+import Text from "./Text.astro";
+import Link from "./Link.astro";
+import Localized from "./Localized.astro";
+---
+
+<aside class="project-sidebar" aria-label="Project information">
+  <Text as="h1" teksttype="p_semib"><slot name="title" /></Text>
+  <Text as="p" teksttype="p_semib"><slot name="category" /></Text>
+  <Text as="p" teksttype="p_semib"><slot name="period" /></Text>
+  <slot name="website" />
+  <Link class="back-link" href="/school-projects"><Localized en="← School projects" /></Link>
+</aside>
+
+<style>
+  .project-sidebar { position: sticky; top: 160px; align-self: start; min-height: min(600px, calc(100svh - 230px)); display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 50px 0 0; text-transform: uppercase; }
+  .project-sidebar :global(h1), .project-sidebar :global(p) { margin: 0; }
+  .project-sidebar :global(a) { width: fit-content; }
+  .project-sidebar :global(.back-link) { text-transform: none; }
+  .project-sidebar :global(.website-link) { position: relative; width: fit-content; }
+  .project-sidebar :global(.website-note) { position: absolute; top: 100%; left: 0; z-index: 2; width: min(260px, calc(100vw - 32px)); margin: 0; padding: 12px; background: #e8e8e2; border: 1px solid rgb(0 0 0 / 15%); border-radius: 3px; text-transform: none; opacity: 0; visibility: hidden; transition: opacity 180ms ease, visibility 180ms ease; }
+  .project-sidebar :global(.website-link:is(:hover, :focus-within) .website-note) { opacity: 1; visibility: visible; }
+  @media (prefers-reduced-motion: reduce) { .project-sidebar :global(.website-note) { transition: none; } }
+  @media (max-width: 640px) {
+    .project-sidebar { position: static; min-height: 0; padding: 0; display: grid; grid-template-columns: 1fr; align-items: baseline; gap: 16px; margin-bottom: 24px; }
+    .project-sidebar :global(br) { display: none; }
+    .project-sidebar :global(.back-link) { display: none; }
+    .project-sidebar :global(.website-note) { left: 0; right: auto; text-align: left; }
+  }
+</style>
