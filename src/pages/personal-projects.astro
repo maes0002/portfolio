@@ -3,6 +3,7 @@ import Localized from "../components/Localized.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 import Text from "../components/Text.astro";
 import Link from "../components/Link.astro";
+import ContactSection from "../components/ContactSection.astro";
 
 interface PersonalProject {
   number: string;
@@ -45,7 +46,7 @@ const projects: PersonalProject[] = [
       {
         src: "/img/clinique/clinique_1.webp",
         alt: "Clinique Harmonie — 1",
-        slides: Array.from({ length: 5 }, (_, index) => ({
+        slides: Array.from({ length: 4 }, (_, index) => ({
           src: `/img/clinique/clinique_${index + 1}.webp`,
           alt: `Clinique Harmonie — ${index + 1}`,
         })),
@@ -54,27 +55,28 @@ const projects: PersonalProject[] = [
   },
   {
     number: "03",
-    title: "LA DOLCE VITA — A CARD GAME",
-    description: "La Dolce Vita is a personal playing card project, inspired by countless summers in Southern Italy and a love of Italian holiday life. With this deck, I wanted to capture that special feeling of long, warm summer evenings, the sound of the sea, and the taste of Aperol in the sun. Through a blend of personal holiday memories and evocative photographs, I created my own interpretation of the classic deck of cards, where each card tells a small part of the story. The aim was to create more than just a deck of cards — a personal design object that evokes memories, invites us to be present, and brings a little la dolce vita into everyday life.",
-    descriptionDa: "La Dolce Vita er et personligt kortspilsprojekt, inspireret af utallige somre i Syditalien og kærligheden til det italienske ferieliv. Med kortspillet ønskede jeg at indfange den helt særlige følelse af lange, varme sommeraftener, lyden af havet og smagen af Aperol i solen. Gennem en blanding af personlige ferieminder og stemningsfulde fotografier har jeg skabt min egen fortolkning af det klassiske kortspil, hvor hvert kort fortæller en lille del af historien. Målet var at skabe mere end blot et kortspil – et personligt designobjekt, der vækker minder, inviterer til nærvær og bringer en lille smule af la dolce vita ind i hverdagen.",
-    note: "This is an independent concept project, created from personal holiday memories and a love of graphic design.",
-    noteDa: "Dette er et selvstændigt konceptprojekt, skabt ud fra personlige ferieminder og en kærlighed til grafisk design.",
+    title: "House of Mjae — Book",
+    description: "A book design concept for House of Mjae, exploring the interplay between typography, materials, and light. The reflective silver cover pairs a minimal layout with contrasting typefaces, giving the book a tactile, sculptural presence. The visual direction focuses on how a simple graphic identity can take on character through its physical form.",
+    descriptionDa: "Et bogdesignkoncept til House of Mjae, der udforsker samspillet mellem typografi, materialer og lys. Det reflekterende sølvomslag kombinerer et minimalistisk layout med kontrasterende skrifttyper og giver bogen et taktilt, skulpturelt udtryk. Den visuelle retning undersøger, hvordan en enkel grafisk identitet kan få karakter gennem sin fysiske form.",
+    note: "An independent concept exploring book design and visual identity.",
+    noteDa: "Et selvstændigt koncept med fokus på bogdesign og visuel identitet.",
     images: [
-      { src: "/video/cardgame.mp4", alt: "La Dolce Vita — kortspil, video", video: true },
-      {
-        src: "/img/kortspil/cardgame.webp",
-        alt: "La Dolce Vita — kortspil",
-      },
+      { src: "/img/book_1.webp", alt: "House of Mjae — silver book on a leather chair" },
+      { src: "/img/book_2.webp", alt: "House of Mjae — silver book cover" },
     ],
   },
   {
     number: "04",
+    title: "House of Mjae — Cans",
+    description: "A packaging concept for House of Mjae, translating the visual identity into a series of mineral water cans. The polished silver surface and pared-back typography create a cohesive expression, with the material itself playing a central role. The presentation explores how packaging, styling, and setting can work together to build a recognizable brand universe.",
+    descriptionDa: "Et emballagekoncept til House of Mjae, hvor den visuelle identitet er omsat til en serie mineralvandsdåser. Den blanke sølvoverflade og enkle typografi skaber et sammenhængende udtryk, hvor selve materialet spiller en central rolle. Præsentationen udforsker, hvordan emballage, styling og omgivelser kan arbejde sammen om at skabe et genkendeligt brandunivers.",
+    note: "An independent concept exploring packaging design and brand presentation.",
+    noteDa: "Et selvstændigt koncept med fokus på emballagedesign og brandpræsentation.",
     images: [
-      { src: "/img/plakat_1.webp", alt: "Plakat 1 — personligt projekt 04" },
-      { src: "/img/plakat_2.webp", alt: "Plakat 2 — personligt projekt 04" },
+      { src: "/img/cans_1.webp", alt: "House of Mjae — stacked silver mineral water cans" },
+      { src: "/img/cans_2.webp", alt: "House of Mjae — mineral water cans served on a silver tray" },
     ],
   },
-  { number: "05", images: [{ src: "", alt: "" }, { src: "", alt: "" }] },
 ];
 ---
 
@@ -91,7 +93,7 @@ const projects: PersonalProject[] = [
             <div>
               <Text as="p" teksttype="h2" class="project-number">NO {project.number}.</Text>
               <Text as="h2" teksttype="h2" id={`personal-project-${project.number}`} class="project-title"><Localized en={project.title ?? `Project ${project.number}`} da={project.title ?? `Projekt ${project.number}`} /></Text>
-              <Text as="p" teksttype="p" class="project-description">{project.number === "03" ? <><Localized en={project.description!.split("la dolce vita")[0]} da={project.descriptionDa!.split("la dolce vita")[0]} /><em>la dolce vita</em><Localized en={project.description!.split("la dolce vita")[1]} da={project.descriptionDa!.split("la dolce vita")[1]} /></> : <Localized en={project.description ?? "Project description coming soon."} da={project.descriptionDa ?? "Projektbeskrivelse kommer snart."} />}</Text>
+              <Text as="p" teksttype="p" class="project-description"><Localized en={project.description ?? "Project description coming soon."} da={project.descriptionDa ?? "Projektbeskrivelse kommer snart."} /></Text>
               {project.href && <Link class="project-link" href={project.href}><Localized en="View project" da="Se projektet" /></Link>}
             </div>
             <Text as="p" teksttype="p_italic" class="project-note"><Localized en={project.note ?? "Project notes coming soon."} da={project.noteDa ?? "Projektnoter kommer snart."} /></Text>
@@ -126,6 +128,7 @@ const projects: PersonalProject[] = [
         </article>
       ))}
     </div>
+    <ContactSection />
   </main>
 </MainLayout>
 
@@ -185,16 +188,10 @@ const projects: PersonalProject[] = [
   [data-layout="2"] .primary-image { grid-column: 1; }
   [data-layout="2"] .project-copy { grid-column: 2; }
   [data-layout="2"] .secondary-image :global(.project-media) { aspect-ratio: 1 / 1; }
-  [data-layout="3"] .primary-image :global(.project-media) { aspect-ratio: 8 / 9; }
-  [data-layout="3"] .primary-image :global(.project-media.video-media) { aspect-ratio: 8 / 9; width: 100%; margin-inline: auto; }
-  [data-layout="3"] .primary-image .single-media-gallery .gallery-controls { width: 100%; margin-inline: auto; }
-  [data-layout="3"] .video-media video { height: 100%; object-fit: cover; object-position: center; }
-  [data-layout="3"] .secondary-image :global(.project-media) { aspect-ratio: .85 / 1.125; }
-  [data-layout="4"] { grid-template-columns: .85fr 1fr 1fr; }
-  [data-layout="4"] .project-copy { grid-column: 3; }
-  [data-layout="4"] .secondary-image { grid-column: 1; }
+  [data-layout="3"] .project-figure :global(.project-media),
   [data-layout="4"] .project-figure :global(.project-media) { aspect-ratio: auto; }
-  [data-layout="4"] .project-media img { width: 100%; height: auto; object-fit: contain; }
+  [data-layout="3"] .project-media img,
+  [data-layout="4"] .project-media img { height: auto; object-fit: contain; }
   @media (hover: hover) and (pointer: fine) { :global(a.project-media:hover) img { transform: scale(1.025); } }
   :global(a.project-media:focus-visible) img { transform: scale(1.025); }
   @media (prefers-reduced-motion: reduce) { .project-media img { transition: none; transform: none !important; } }
@@ -207,15 +204,11 @@ const projects: PersonalProject[] = [
     [data-layout="2"] .primary-image video { height: 100%; object-fit: cover; }
     [data-layout="2"] .secondary-image :global(.project-media) { aspect-ratio: 1 / 1; }
     [data-layout="2"] .gallery-track img { object-fit: cover; }
-    [data-layout="3"] .primary-image :global(.project-media.video-media) { width: 100%; aspect-ratio: 8 / 9; }
-    [data-layout="3"] .primary-image .single-media-gallery .gallery-controls { width: 100%; }
-    [data-layout="3"] .secondary-image :global(.project-media) { aspect-ratio: .85 / .9; }
-    [data-layout="3"] .gallery-track img { object-fit: cover; }
   }
   @media (max-width: 640px) {
     .personal-page { padding: 160px 0 80px; }
     .personal-projects { gap: 64px; }
-    .personal-project, [data-layout="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+    .personal-project { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
     .personal-project .project-copy { grid-column: 1 / -1; grid-row: 1; padding-bottom: 0; }
     .project-copy :global(.project-number) { margin-bottom: 16px; }
     .project-copy :global(.project-note) { padding-top: 16px; }
@@ -225,7 +218,5 @@ const projects: PersonalProject[] = [
     [data-layout="2"] { row-gap: 15px; }
     [data-layout="2"] .primary-image { grid-column: 1 / -1; }
     [data-layout="2"] .secondary-image { grid-column: 1 / -1; grid-row: 3; }
-    [data-layout="3"] .primary-image :global(.project-media.video-media) { width: 100%; }
-    [data-layout="3"] .primary-image .single-media-gallery .gallery-controls { width: 100%; }
   }
 </style>

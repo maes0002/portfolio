@@ -1,5 +1,6 @@
 ---
 import Link from "../components/Link.astro";
+import ContactSection from "../components/ContactSection.astro";
 import Localized from "../components/Localized.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 import Text from "../components/Text.astro";
@@ -18,9 +19,39 @@ interface Project {
 }
 
 const projects: Project[] = [
-  { number: "01", title: "Tusindfryd", category: "Digital Design · Website Development · Content Creation · 2026", description: "A webshop redesign that brings a curated vintage collection into focus through a clear visual identity and a considered shopping experience.", descriptionDa: "Et webshop-redesign, der fremhæver kuraterede vintagemøbler gennem en tydelig visuel identitet og en gennemtænkt købsoplevelse.", featured: true, image: "/img/tusindfryds/tusindfryds_3.webp", alt: "A preview of the Tusindfryd website", href: "/school-projects/tusindfryd" },
-  { number: "02", title: "Internship — Graphic design & social media", category: "Graphic design · Social media · Internship · 2026", description: "Selected graphic design and social media content from my internship, including work for GUÉRI, Flying Tiger, Okholm Studio, and Selume.", descriptionDa: "Udvalgt grafisk arbejde og indhold til sociale medier fra mit praktikforløb, blandt andet for GUÉRI, Flying Tiger, Okholm Studio og Selume.", featured: false, image: "/img/internship.webp", alt: "Selected graphic design and social media work from my internship", href: "/school-projects/internship" },
-  { number: "03", title: "Project name", category: "Concept · Art direction · 2026", featured: false, href: "/school-projects/project-3" },
+  {
+    number: "01",
+    title: "Tusindfryd",
+    category: "Digital Design · Website Development · Content Creation · 2026",
+    description: "A webshop redesign that brings a curated vintage collection into focus through a clear visual identity and a considered shopping experience.",
+    descriptionDa: "Et webshop-redesign, der fremhæver kuraterede vintagemøbler gennem en tydelig visuel identitet og en gennemtænkt købsoplevelse.",
+    featured: true,
+    image: "/img/tusindfryds/tusindfryds_3.webp",
+    alt: "A preview of the Tusindfryd website",
+    href: "/school-projects/tusindfryd",
+  },
+  {
+    number: "02",
+    title: "Internship — Graphic design & social media",
+    category: "Graphic design · Social media · Internship · 2026",
+    description: "Selected graphic design and social media content from my internship, including work for GUÉRI, Flying Tiger, and Okholm Studio.",
+    descriptionDa: "Udvalgt grafisk arbejde og indhold til sociale medier fra mit praktikforløb, blandt andet for GUÉRI, Flying Tiger og Okholm Studio.",
+    featured: false,
+    image: "/img/internship.webp",
+    alt: "Selected graphic design and social media work from my internship",
+    href: "/school-projects/internship",
+  },
+  {
+    number: "03",
+    title: "Streetcare",
+    category: "Concept · Art direction · 2026",
+    description: "An elective exam project focused on UI design, visual storytelling, and usability through a redesign of Streetcare’s website that reflects the organization’s values.",
+    descriptionDa: "En valgfagseksamenscase med fokus på UI-design, visuel storytelling og brugervenlighed gennem et redesign af Streetcares website, der afspejler organisationens værdier.",
+    featured: false,
+    video: "/video/streetcare_vid.mp4",
+    alt: "Streetcare — project preview",
+    href: "/school-projects/streetcare",
+  },
 ];
 ---
 
@@ -31,31 +62,43 @@ const projects: Project[] = [
         <Text as="p" teksttype="p_smaller" class="intro-selected"><Localized en="Selected" da="Udvalgte" /></Text>
         <Text as="h1" teksttype="h1" id="work-title" class="intro-heading"><Localized en="School projects" /></Text>
       </div>
-      <Text as="p" teksttype="p_italic" class="intro-note"><Localized en="Digital design, user experiences and visual communication." da="Digitalt design, brugeroplevelser og visuel kommunikation." /></Text>
+      <Text as="p" teksttype="p_italic" class="intro-note">
+        <Localized en="Digital design, user experiences and visual communication." da="Digitalt design, brugeroplevelser og visuel kommunikation." />
+      </Text>
     </header>
 
     <section class="project-gallery" aria-labelledby="work-title" data-project-gallery>
       <div class="project-track" id="school-project-track" tabindex="0" role="region" aria-label="School projects">
-        {projects.map((project) => (
-          <article class="project">
-            <Link href={project.href} variant="image" class="project-image-link" aria-label={`View ${project.title} project`}>
-              {project.video ? (
-                <video class="project-image" src={project.video} autoplay muted loop playsinline preload="metadata" aria-label={project.alt}></video>
-              ) : project.image ? (
-                <img class="project-image" src={project.image} alt={project.alt} />
-              ) : (
-                <div class="image-placeholder" role="img" aria-label={`Image placeholder for school project ${project.number}`}>
-                  <Text as="span" teksttype="p_smaller" class="placeholder-label"><Localized en="Project preview coming soon" /></Text>
-                </div>
-              )}
-            </Link>
-            <div class="project-details">
-              <Text as="h2" teksttype="h2" class="project-title"><Localized en={project.title === "Tusindfryd" ? "Tusindfryds" : project.title} /></Text>
-              <Text as="p" teksttype="p" class="project-description"><Localized en={project.description ?? "Project description coming soon."} da={project.descriptionDa ?? "Projektbeskrivelse kommer snart."} /></Text>
-              <Text as="p" teksttype="p_thinner" class="project-category"><Localized en={project.category} /></Text>
-            </div>
-          </article>
-        ))}
+        {
+          projects.map((project) => (
+            <article class="project">
+              <Link href={project.href} variant="image" class="project-image-link" aria-label={`View ${project.title} project`}>
+                {project.video ? (
+                  <video class="project-image" src={project.video} autoplay muted loop playsinline preload="metadata" aria-label={project.alt} />
+                ) : project.image ? (
+                  <img class="project-image" src={project.image} alt={project.alt} />
+                ) : (
+                  <div class="image-placeholder" role="img" aria-label={`Image placeholder for school project ${project.number}`}>
+                    <Text as="span" teksttype="p_smaller" class="placeholder-label">
+                      <Localized en="Project preview coming soon" />
+                    </Text>
+                  </div>
+                )}
+              </Link>
+              <div class="project-details">
+                <Text as="h2" teksttype="h2" class="project-title">
+                  <Localized en={project.title === "Tusindfryd" ? "Tusindfryds" : project.title} />
+                </Text>
+                <Text as="p" teksttype="p" class="project-description">
+                  <Localized en={project.description ?? "Project description coming soon."} da={project.descriptionDa ?? "Projektbeskrivelse kommer snart."} />
+                </Text>
+                <Text as="p" teksttype="p_thinner" class="project-category">
+                  <Localized en={project.category} />
+                </Text>
+              </div>
+            </article>
+          ))
+        }
       </div>
       <div class="gallery-navigation">
         <Text as="p" teksttype="p_smaller" class="gallery-hint"><Localized en="Scroll to explore" da="Scroll for at udforske" /></Text>
@@ -66,12 +109,7 @@ const projects: Project[] = [
       </div>
     </section>
 
-    <section class="contact" aria-labelledby="contact-title">
-      <Text as="p" teksttype="h2" class="contact-label"><Localized en="Get in touch" /></Text>
-      <Text as="h2" teksttype="h1" id="contact-title" class="contact-heading"><Localized en="Let’s create something together." da="Lad os skabe noget sammen." /></Text>
-      <Text as="p" teksttype="p" class="contact-description"><Localized en="I’m open to job opportunities and freelance projects. Have something in mind? Get in touch." da="Jeg er åben for både jobmuligheder og freelanceopgaver. Har du noget i tankerne? Skriv til mig." /></Text>
-      <Link href="mailto:majaestrup@gmail.com">majaestrup@gmail.com ↗</Link>
-    </section>
+    <ContactSection />
   </main>
 </MainLayout>
 
@@ -87,12 +125,14 @@ const projects: Project[] = [
         button.disabled = Number(button.dataset.direction) < 0 ? track!.scrollLeft <= 1 : track!.scrollLeft >= end - 1;
       });
     }
-    buttons.forEach((button) => button.addEventListener("click", () => {
-      const project = track.querySelector<HTMLElement>(".project");
-      if (!project) return;
-      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-      track.scrollBy({ left: Number(button.dataset.direction) * (project.offsetWidth + gap), behavior: reducedMotion.matches ? "auto" : "smooth" });
-    }));
+    buttons.forEach((button) =>
+      button.addEventListener("click", () => {
+        const project = track.querySelector<HTMLElement>(".project");
+        if (!project) return;
+        const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        track.scrollBy({ left: Number(button.dataset.direction) * (project.offsetWidth + gap), behavior: reducedMotion.matches ? "auto" : "smooth" });
+      }),
+    );
     track.addEventListener("scroll", updateButtons, { passive: true });
     const observer = new ResizeObserver(updateButtons);
     observer.observe(track);
@@ -102,44 +142,151 @@ const projects: Project[] = [
 </script>
 
 <style>
-  .work-page { min-width: 0; padding: calc(var(--site-header-height, 72px) + 100px) 0 100px; }
-  .page-intro { position: relative; padding-bottom: 126px; }
-  .intro-title { display: flex; flex-direction: column; gap: 35px; width: fit-content; max-width: 100%; margin-inline: auto; text-transform: uppercase; }
-  .intro-title :global(p), .intro-title :global(h1) { margin: 0; }
-  .page-intro :global(.intro-note) { position: absolute; right: 10%; bottom: 32px; width: min(230px, 100%); margin: 0; }
-  .project-gallery { min-width: 0; }
-  .project-track { display: flex; gap: 30px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: rgb(0 0 0 / 20%) transparent; padding-bottom: 24px; }
-  .project-track:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
-  .project { flex: 0 0 658px; min-width: 0; scroll-snap-align: start; }
-  .project :global(.project-image-link) { height: 361px; }
-  .project-image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 650ms cubic-bezier(.22, 1, .36, 1); }
-  .image-placeholder { display: grid; place-items: center; height: 100%; background: #cecece; }
-  .image-placeholder :global(.placeholder-label) { opacity: .5; }
-  .project-details { padding-top: 24px; }
-  .project-details :global(.project-title) { margin: 0 0 15px; text-transform: uppercase; }
-  .project-details :global(.project-description) { max-width: 470px; margin: 0; }
-  .project-details :global(.project-category) { margin: 15px 0 0; opacity: .65; }
-  .gallery-navigation { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 12px; }
-  .gallery-navigation :global(.gallery-hint) { margin: 0; text-transform: uppercase; }
-  .gallery-buttons { display: flex; gap: 12px; }
-  .gallery-buttons button { min-width: 44px; min-height: 44px; font: inherit; }
-  .gallery-buttons button:disabled { opacity: .25; }
-  .gallery-buttons button:not(:disabled):hover { background: rgb(0 0 0 / 4%); }
-  .gallery-buttons button:focus-visible { outline: 1px solid currentColor; }
-  .contact { margin-top: 140px; padding-top: 32px; border-top: 1px solid rgb(0 0 0 / 20%); }
-  .contact :global(.contact-label) { margin: 0 0 24px; text-transform: uppercase; }
-  .contact :global(.contact-heading) { margin: 0 0 24px; line-height: 1.2; }
-  .contact :global(.contact-description) { max-width: 440px; margin: 0 0 16px; }
-  @media (hover: hover) and (pointer: fine) { :global(.project-image-link:hover) .project-image { transform: scale(1.025); } }
-  :global(.project-image-link:focus-visible) .project-image { transform: scale(1.025); }
-  @media (prefers-reduced-motion: reduce) { .project-image { transition: none; transform: none !important; } }
+  .work-page {
+    min-width: 0;
+    padding: calc(var(--site-header-height, 72px) + 100px) 0 100px;
+  }
+  .page-intro {
+    position: relative;
+    padding-bottom: 126px;
+  }
+  .intro-title {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    text-transform: uppercase;
+  }
+  .intro-title :global(p),
+  .intro-title :global(h1) {
+    margin: 0;
+  }
+  .page-intro :global(.intro-note) {
+    position: absolute;
+    right: 10%;
+    bottom: 32px;
+    width: min(230px, 100%);
+    margin: 0;
+  }
+  .project-gallery {
+    min-width: 0;
+  }
+  .project-track {
+    display: flex;
+    gap: 30px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(0 0 0 / 20%) transparent;
+    padding-bottom: 24px;
+  }
+  .project-track:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 4px;
+  }
+  .project {
+    flex: 0 0 658px;
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+  .project :global(.project-image-link) {
+    height: 361px;
+  }
+  .project-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .image-placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    background: #cecece;
+  }
+  .image-placeholder :global(.placeholder-label) {
+    opacity: 0.5;
+  }
+  .project-details {
+    padding-top: 24px;
+  }
+  .project-details :global(.project-title) {
+    margin: 0 0 15px;
+    text-transform: uppercase;
+  }
+  .project-details :global(.project-description) {
+    max-width: 470px;
+    margin: 0;
+  }
+  .project-details :global(.project-category) {
+    margin: 15px 0 0;
+    opacity: 0.65;
+  }
+  .gallery-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 12px;
+  }
+  .gallery-navigation :global(.gallery-hint) {
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .gallery-buttons {
+    display: flex;
+    gap: 12px;
+  }
+  .gallery-buttons button {
+    min-width: 44px;
+    min-height: 44px;
+    font: inherit;
+  }
+  .gallery-buttons button:disabled {
+    opacity: 0.25;
+  }
+  .gallery-buttons button:not(:disabled):hover {
+    background: rgb(0 0 0 / 4%);
+  }
+  .gallery-buttons button:focus-visible {
+    outline: 1px solid currentColor;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :global(.project-image-link:hover) .project-image {
+      transform: scale(1.025);
+    }
+  }
+  :global(.project-image-link:focus-visible) .project-image {
+    transform: scale(1.025);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .project-image {
+      transition: none;
+      transform: none !important;
+    }
+  }
   @media (max-width: 640px) {
-    .work-page { padding: 160px 0 80px; }
-    .page-intro :global(.intro-note) { right: 0; }
-    .project-track { gap: 16px; }
-    .project { flex-basis: min(658px, calc(100vw - 2 * var(--page-gutter) - 24px)); }
-    .project :global(.project-image-link) { height: auto; aspect-ratio: 658 / 361; }
-    .project-details { padding-top: 20px; }
-    .contact { margin-top: 80px; }
+    .work-page {
+      padding: 160px 0 80px;
+    }
+    .page-intro :global(.intro-note) {
+      right: 0;
+    }
+    .project-track {
+      gap: 16px;
+    }
+    .project {
+      flex-basis: min(658px, calc(100vw - 2 * var(--page-gutter) - 24px));
+    }
+    .project :global(.project-image-link) {
+      height: auto;
+      aspect-ratio: 658 / 361;
+    }
+    .project-details {
+      padding-top: 20px;
+    }
   }
 </style>

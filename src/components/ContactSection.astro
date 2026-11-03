@@ -1,0 +1,22 @@
+---
+import Link from "./Link.astro";
+import Localized from "./Localized.astro";
+import Text from "./Text.astro";
+---
+
+<section class="contact" aria-labelledby="contact-title">
+      <Text as="h2" teksttype="h1" id="contact-title" class="contact-heading"><Localized en="Have a project in mind?" da="Har du et projekt i tankerne?" /></Text>
+      <Text as="p" teksttype="p_smaller" class="contact-label"><Localized en="Contact me!" da="Kontakt mig!" /></Text>
+      <Text as="p" teksttype="p" class="contact-description"><Localized en="I’m open to job opportunities and freelance projects. Have something in mind? Get in touch." da="Jeg er åben for både jobmuligheder og freelanceopgaver. Har du noget i tankerne? Skriv til mig." /></Text>
+      <Link href="mailto:majaestrup@gmail.com">majaestrup@gmail.com ↗</Link>
+    </section>
+
+<style>
+  .contact { margin-top: 140px; padding: 110px 0 10px 14%; }
+  .contact :global(.contact-label) { margin: 0 0 16px; text-transform: uppercase; line-height: 1.4; }
+  .contact :global(.contact-heading) { margin: 0 0 24px; line-height: 1.2; text-transform: uppercase; }
+  .contact :global(.contact-description) { max-width: 370px; margin: 0 0 20px; }
+  @media (max-width: 640px) {
+    .contact { margin-top: 80px; padding: 40px 0 0; }
+  }
+</style>

@@ -8,7 +8,6 @@ export function getStaticPaths() {
   return [
     { params: { slug: "gueri" }, props: { title: "Gueri", category: "Visual identity · Digital design · 2026", video: "/video/gueri_vid.mp4" } },
     { params: { slug: "hojskolen" }, props: { title: "Højskolen", category: "Visual identity · Digital design · 2026", video: "/video/hojskolen_vid.mov" } },
-    { params: { slug: "project-3" }, props: { title: "Project name", category: "Concept · Art direction · 2026", video: undefined } },
   ];
 }
 const { title, category, video } = Astro.props;

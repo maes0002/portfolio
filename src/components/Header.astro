@@ -14,7 +14,7 @@ const isHome = Astro.url.pathname === "/";
     <Localized en="DIGITAL DESIGNER" />
   </Text> : (
     <Link href="/" variant="logo" aria-label="Home">
-      <img src="/svg/logo.svg" alt="Maja Estrup" width="51" height="18" />
+      <img src="/img/logo.png" alt="Maja Estrup" width="51" style="height: auto;" />
     </Link>
   )}
   </div>
@@ -27,7 +27,7 @@ const isHome = Astro.url.pathname === "/";
     <Link href="/personal-projects"><Localized en="PERSONAL PROJECTS" /></Link>
     <span class="resume-link">
       <Link href="/resume" aria-describedby="resume-hint"><Localized en="RESUMÉ" /></Link>
-      <span id="resume-hint" class="resume-hint"><Localized en="Download PDF ↗" /></span>
+      <span id="resume-hint" class="resume-hint"><Localized en="View CV ↗" da="Se CV ↗" /></span>
     </span>
     <div class="mobile-contact"><Link href="mailto:majaestrup@gmail.com"><Localized en="CONTACT ME" da="KONTAKT MIG" /></Link></div>
     <div class="desktop-language"><LanguageSwitch /></div>

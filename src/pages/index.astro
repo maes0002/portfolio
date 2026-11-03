@@ -3,7 +3,14 @@ import MainLayout from "../layouts/MainLayout.astro";
 ---
 
 <MainLayout title="Home — Maja Estrup" liquidBackground={true} liquidOpacity={1}>
-  <main class="flex items-center justify-center">
-    <img src="/svg/logo.svg" alt="Maja Estrup" class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[60px] h-auto" />
+  <main>
+    <div class="home-logo">
+      <img src="/img/logo.png" alt="Maja Estrup" />
+    </div>
   </main>
 </MainLayout>
+
+<style>
+  .home-logo { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; }
+  .home-logo img { display: block; width: 60px; height: auto; }
+</style>

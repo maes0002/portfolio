@@ -62,21 +62,6 @@ import ProjectSidebar from "../../components/ProjectSidebar.astro";
       <video class="okholm-third" src="/video/okholm_3.mov" autoplay muted loop playsinline controls preload="metadata" aria-label="Okholm Studio — content 3"></video>
     </section>
 
-    <section class="selume-section" aria-labelledby="selume-title">
-      <div class="case-copy selume-copy">
-        <Text as="p" teksttype="h2" class="services">Graphic design / Content creation / Meta ads</Text>
-        <Text as="p" teksttype="p"><Localized
-          en="Selected work for Selume from my internship, with a focus on graphic design, content creation, and Meta ads."
-          da="Udvalgt arbejde til Selume fra mit praktikforløb med fokus på grafisk design, content creation og Meta-annoncering." /></Text>
-      </div>
-      <div class="selume-media">
-        <Text as="h2" teksttype="h2" id="selume-title" class="brand-title">Selume</Text>
-        <div class="selume-pair">
-          <div class="media-placeholder" role="img" aria-label="Selume — content coming soon"></div>
-          <div class="media-placeholder" role="img" aria-label="Selume — content coming soon"></div>
-        </div>
-      </div>
-    </section>
     </div>
   </main>
 </MainLayout>
@@ -104,26 +89,21 @@ import ProjectSidebar from "../../components/ProjectSidebar.astro";
   .okholm-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 45px; }
   .okholm-pair video { aspect-ratio: 4 / 5; height: auto; }
   .okholm-third { grid-column: 2; aspect-ratio: 4 / 5; height: auto; }
-  .selume-section { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin: 150px 0 0 22%; align-items: end; }
-  .selume-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .media-placeholder { aspect-ratio: 2 / 3; background: white; }
   @media (max-width: 1000px) and (min-width: 641px) {
     .internship-page { grid-template-columns: 20% minmax(0, 1fr); }
     .gueri-grid { gap: 16px; }
-    .tiger-section, .okholm-section, .selume-section { margin-left: 8%; gap: 24px; }
+    .tiger-section, .okholm-section { margin-left: 8%; gap: 24px; }
     .okholm-pair { gap: 20px; }
   }
   @media (max-width: 640px) {
     .internship-page { display: block; padding: 140px 0 60px; }
-    .gueri-section, .tiger-section, .okholm-section, .selume-section { display: grid; grid-template-columns: 1fr; gap: 30px; margin: 0; }
-    .tiger-section, .okholm-section, .selume-section { margin-top: 80px; }
+    .gueri-section, .tiger-section, .okholm-section { display: grid; grid-template-columns: 1fr; gap: 30px; margin: 0; }
+    .tiger-section, .okholm-section { margin-top: 80px; }
     .gueri-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
     .gueri-grid video { grid-column: 1 / -1; }
     .gueri-grid img { height: auto; aspect-ratio: 4 / 5; }
     .gueri-copy { grid-column: 1; margin: 0; }
     .okholm-pair { gap: 15px; }
     .okholm-third { grid-column: 1; }
-    .selume-media { grid-row: 1; }
-    .selume-pair { gap: 15px; }
   }
 </style>

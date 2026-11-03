@@ -1,0 +1,165 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import Localized from "../components/Localized.astro";
+import Link from "../components/Link.astro";
+const education = [
+  {
+    title: "Professional Bachelor’s Degree in Digital Concept Development", titleDa: "Professionsbachelor i digital konceptudvikling",
+    period: "August 2026 – Expected January 2028", periodDa: "August 2026 – forventet januar 2028",
+    points: [
+      ["Building expertise in digital concept development, user experience, business development and digital strategy.", "Opbygger kompetencer inden for digital konceptudvikling, brugeroplevelser, forretningsudvikling og digital strategi."],
+      ["Learning to create value-driven digital concepts based on research, data and analysis.", "Lærer at skabe værdiskabende digitale koncepter baseret på research, data og analyse."],
+      ["Working with design thinking, Double Diamond, prototyping and interdisciplinary design processes.", "Arbejder med design thinking, Double Diamond, prototyper og tværfaglige designprocesser."],
+    ],
+  },
+  {
+    title: "AP Degree in Multimedia Design", titleDa: "Erhvervsakademiuddannelse i multimediedesign",
+    period: "August 2024 – June 2026", periodDa: "August 2024 – juni 2026",
+    points: [
+      ["Developed digital experiences across UX/UI, web design, prototyping, visual communication and content creation.", "Udviklede digitale oplevelser inden for UX/UI, webdesign, prototyper, visuel kommunikation og content creation."],
+      ["Worked with Figma, Adobe Creative Cloud, animation, image editing and frontend technologies including HTML, CSS, Tailwind CSS and Astro.", "Arbejdede med Figma, Adobe Creative Cloud, animation, billedredigering og frontendteknologier som HTML, CSS, Tailwind CSS og Astro."],
+      ["Applied research, ideation and concept development to real client cases, including Højskolendk, Børnebiffen, Kulturnatten Helsingør and Tusindfryds.", "Anvendte research, idéudvikling og konceptudvikling på virkelige kundecases, blandt andet Højskolendk, Børnebiffen, Kulturnatten Helsingør og Tusindfryds."],
+    ],
+  },
+];
+const experience = [
+  { title: "Woods_ Copenhagen", period: "May 2025 – Present", periodDa: "Maj 2025 – nu",
+    points: [
+      ["Advise customers on skincare products and routines based on individual needs.", "Rådgiver kunder om hudplejeprodukter og rutiner med udgangspunkt i individuelle behov."],
+      ["Create strong customer experiences through product knowledge, communication and consultative sales.", "Skaber stærke kundeoplevelser gennem produktviden, kommunikation og rådgivende salg."],
+      ["Contribute to daily sales performance while representing the brand’s identity and values.", "Bidrager til det daglige salg og repræsenterer brandets identitet og værdier."],
+      ["Support commercial performance through customer guidance, product knowledge and a strong understanding of customer needs.", "Understøtter de kommercielle resultater gennem kunderådgivning, produktviden og en stærk forståelse for kundernes behov."],
+    ],
+  },
+  { title: "Magasin Kgs. Nytorv", period: "May 2022 – August 2024", periodDa: "Maj 2022 – august 2024",
+    points: [
+      ["Delivered efficient and service-oriented customer experiences in a high-traffic retail environment.", "Leverede effektive og serviceorienterede kundeoplevelser i et travlt butiksmiljø."],
+      ["Handled transactions, customer inquiries and daily operational tasks with accuracy and professionalism.", "Håndterede betalinger, kundehenvendelser og daglige driftsopgaver med præcision og professionalisme."],
+      ["Built strong communication, teamwork and customer service skills.", "Opbyggede stærke kompetencer inden for kommunikation, samarbejde og kundeservice."],
+    ],
+  },
+];
+const technical = ["Figma", "Adobe Creative Cloud", "HTML", "CSS", "Tailwind CSS", "Astro", "JavaScript", "Visual Studio Code"];
+const creative = [
+  ["Digital Concept Development", "Digital konceptudvikling"], ["UX/UI Design", "UX/UI-design"],
+  ["Visual Communication", "Visuel kommunikation"], ["Prototyping", "Prototyper"],
+  ["Content Creation", "Content creation"], ["Social Media Content", "Indhold til sociale medier"],
+  ["Ideation & Concept Development", "Idé- og konceptudvikling"], ["User, Market & Client Research", "Bruger-, markeds- og kunderesearch"],
+  ["Animation", "Animation"], ["Image Editing", "Billedredigering"],
+];
+const interests = [
+  { title: "Visual culture & design", titleDa: "Visuel kultur og design", text: "Constantly exploring new ideas in graphic design, typography, branding and digital experiences.", textDa: "Udforsker løbende nye idéer inden for grafisk design, typografi, branding og digitale oplevelser." },
+  { title: "Fashion & beauty", titleDa: "Mode og skønhed", text: "Inspires my interest in aesthetics, trends and visual identity.", textDa: "Inspirerer min interesse for æstetik, trends og visuel identitet." },
+  { title: "Photography & art direction", titleDa: "Fotografi og art direction", text: "Sharpens my eye for composition, mood and visual storytelling.", textDa: "Skærper mit blik for komposition, stemning og visuel storytelling." },
+  { title: "Travel & culture", titleDa: "Rejser og kultur", text: "Gives me new perspectives and creative inspiration from different places and environments.", textDa: "Giver mig nye perspektiver og kreativ inspiration fra forskellige steder og miljøer." },
+];
+---
+
+<MainLayout title="Resumé — Maja Estrup" liquidBackground={true} liquidOpacity={0.15}>
+  <main class="resume-page">
+    <section class="resume-intro" aria-labelledby="resume-title">
+      <div class="profile">
+        <h1 id="resume-title">Digital designer</h1>
+        <p class="name">Maja Estrup</p>
+        <h2 class="profile-label"><Localized en="Profile" da="Profil" /></h2>
+        <p><Localized en="Digital Designer with experience in digital concept development, visual communication, UX/UI and content creation. Skilled at transforming research and ideas into engaging digital experiences across websites, prototypes and social media. Combines a strong creative mindset with practical knowledge of Figma, Adobe Creative Cloud and frontend technologies including HTML, CSS, Tailwind CSS, Astro and JavaScript." da="Digital designer med erfaring inden for digital konceptudvikling, visuel kommunikation, UX/UI og content creation. Omsætter research og idéer til engagerende digitale oplevelser på websites, i prototyper og på sociale medier. Kombinerer en kreativ tilgang med praktisk viden om Figma, Adobe Creative Cloud og frontendteknologier som HTML, CSS, Tailwind CSS, Astro og JavaScript." /></p>
+        <div class="pdf-link"><Link href="/CV.pdf" target="_blank" rel="noopener noreferrer"><Localized en="View CV as PDF ↗" da="Se CV som PDF ↗" /></Link></div>
+      </div>
+      <img class="portrait" src="/img/portrait.webp" alt="Maja Estrup" width="1075" height="1300" />
+    </section>
+
+    <div class="experience-grid">
+      <section aria-labelledby="education-title">
+        <h2 id="education-title"><Localized en="Education" da="Uddannelse" /></h2>
+        {education.map((item) => <article class="entry">
+          <h3 class="degree"><Localized en={item.title} da={item.titleDa} /></h3>
+          <p class="institution">Erhvervsakademi København (KEA) / (EK)</p>
+          <p class="period"><Localized en={item.period} da={item.periodDa} /></p>
+          <ul>{item.points.map(([en, da]) => <li><Localized en={en} da={da} /></li>)}</ul>
+        </article>)}
+      </section>
+      <section aria-labelledby="experience-title">
+        <h2 id="experience-title"><Localized en="Professional experience" da="Erhvervserfaring" /></h2>
+        {experience.map((item) => <article class="entry">
+          <h3>{item.title}</h3>
+          <p class="period"><Localized en={item.period} da={item.periodDa} /></p>
+          <ul>{item.points.map(([en, da]) => <li><Localized en={en} da={da} /></li>)}</ul>
+        </article>)}
+      </section>
+    </div>
+
+    <div class="skills-grid">
+      <section aria-labelledby="technical-title">
+        <h2 id="technical-title"><Localized en="Technical skills" da="Tekniske kompetencer" /></h2>
+        <ul>{technical.map((skill) => <li>{skill}</li>)}</ul>
+      </section>
+      <section aria-labelledby="creative-title">
+        <h2 id="creative-title"><Localized en="Creative skills" da="Kreative kompetencer" /></h2>
+        <ul>{creative.map(([en, da]) => <li><Localized en={en} da={da} /></li>)}</ul>
+      </section>
+      <section aria-labelledby="languages-title">
+        <h2 id="languages-title"><Localized en="Languages & location" da="Sprog og bopæl" /></h2>
+        <ul>
+          <li><Localized en="Danish — Native" da="Dansk — modersmål" /></li>
+          <li><Localized en="English — Fluent" da="Engelsk — flydende" /></li>
+          <li><Localized en="Based in Copenhagen, Denmark" da="Bosat i København, Danmark" /></li>
+        </ul>
+        <p class="relocation"><Localized en="*Open to international relocation for the right opportunity." da="*Åben for at flytte til udlandet for den rette mulighed." /></p>
+      </section>
+    </div>
+
+    <section class="interests" aria-labelledby="interests-title">
+      <h2 id="interests-title"><Localized en="Interests" da="Interesser" /></h2>
+      {interests.map((item) => <div class="interest">
+        <h3><Localized en={item.title} da={item.titleDa} /></h3>
+        <p><Localized en={item.text} da={item.textDa} /></p>
+      </div>)}
+    </section>
+  </main>
+</MainLayout>
+
+<style>
+  .resume-page { padding: 180px 0 130px; font-family: "Geist Mono", monospace; font-size: 12px; line-height: 1.5; }
+  h1, h2, h3, p { margin: 0; }
+  h1, h2 { text-transform: uppercase; font-size: 18px; line-height: 1.25; font-weight: 600; }
+  h2 { margin-bottom: 32px; }
+  h3 { font-size: inherit; font-weight: 600; }
+  .resume-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 10%; align-items: end; }
+  .profile { max-width: 560px; }
+  .name { text-transform: uppercase; margin: 12px 0 32px; font-weight: 600; }
+  .profile-label { font-size: 12px; text-decoration: underline; margin-bottom: 6px; }
+  .portrait { display: block; width: 82%; height: auto; justify-self: end; }
+  .pdf-link { margin-top: 24px; }
+  .experience-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7%; margin-top: 150px; }
+  .entry + .entry { margin-top: 42px; }
+  .degree { text-decoration: underline; text-underline-offset: 2px; }
+  .institution { font-weight: 600; margin-top: 12px; }
+  .period { margin: 12px 0; letter-spacing: .06em; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { position: relative; padding-left: 14px; }
+  li::before { content: "–"; position: absolute; left: 0; }
+  .entry li + li { margin-top: 16px; }
+  .skills-grid { display: grid; grid-template-columns: 1fr 1.2fr 2.2fr; gap: 40px; margin-top: 150px; }
+  .skills-grid h2 { margin-bottom: 18px; }
+  .relocation { margin-top: 22px; }
+  .interests { max-width: 560px; margin-top: 150px; }
+  .interests h2 { margin-bottom: 18px; }
+  .interest + .interest { margin-top: 18px; }
+  .interest p { padding-left: 14px; position: relative; }
+  .interest p::before { content: "–"; position: absolute; left: 0; }
+  @media (max-width: 900px) {
+    .resume-page { padding-top: 150px; }
+    .resume-intro { gap: 6%; }
+    .skills-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .skills-grid section:last-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .resume-page { padding: 140px 0 70px; }
+    .resume-intro { display: flex; flex-direction: column-reverse; gap: 36px; align-items: stretch; }
+    .portrait { width: 72%; align-self: flex-end; }
+    .experience-grid { grid-template-columns: 1fr; gap: 56px; margin-top: 64px; }
+    .skills-grid { grid-template-columns: 1fr; gap: 36px; margin-top: 56px; }
+    .skills-grid section:last-child { grid-column: auto; }
+    .interests { margin-top: 56px; }
+  }
+</style>
