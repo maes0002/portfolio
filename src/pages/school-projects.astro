@@ -74,7 +74,7 @@ const projects: Project[] = [
             <article class="project">
               <Link href={project.href} variant="image" class="project-image-link" aria-label={`View ${project.title} project`}>
                 {project.video ? (
-                  <video class="project-image" src={project.video} autoplay muted loop playsinline preload="metadata" aria-label={project.alt} />
+                  <video class="project-image" src={project.video} data-viewport-video muted loop playsinline preload="metadata" aria-label={project.alt} />
                 ) : project.image ? (
                   <img class="project-image" src={project.image} alt={project.alt} />
                 ) : (

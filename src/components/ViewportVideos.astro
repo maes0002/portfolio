@@ -1,0 +1,44 @@
+<script>
+  let cleanup = () => {};
+
+  function mount() {
+    cleanup();
+    const videos = [...document.querySelectorAll<HTMLVideoElement>("[data-viewport-video]")];
+    const visible = new Set<HTMLVideoElement>();
+    const motion = matchMedia("(prefers-reduced-motion: reduce)");
+    function sync() {
+      videos.forEach((video) => {
+        if (document.hidden || !visible.has(video)) {
+          video.pause();
+        } else if (!motion.matches) {
+          void video.play().catch(() => {});
+        }
+      });
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.1) visible.add(video);
+        else visible.delete(video);
+      });
+      sync();
+    }, { threshold: [0, 0.1] });
+    videos.forEach((video) => observer.observe(video));
+    document.addEventListener("visibilitychange", sync);
+    motion.addEventListener("change", sync);
+    cleanup = () => {
+      observer.disconnect();
+      videos.forEach((video) => video.pause());
+      document.removeEventListener("visibilitychange", sync);
+      motion.removeEventListener("change", sync);
+    };
+  }
+
+  document.addEventListener("astro:before-swap", () => cleanup());
+  document.addEventListener("astro:page-load", mount);
+  window.addEventListener("pagehide", () => cleanup());
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) mount();
+  });
+  mount();
+</script>

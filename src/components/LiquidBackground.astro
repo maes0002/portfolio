@@ -4,11 +4,11 @@ interface Props {
   image?: string;
   opacity?: number;
 }
-const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1 } = Astro.props;
+const { video = "/video/bg-video-optimized.mp4", image = "/img/liquid-bg.jpg", opacity = 1 } = Astro.props;
 ---
 
 <div class="liquid-background" data-liquid-background data-video={video} aria-hidden="true" style={{ backgroundImage: `url("${image}")`, opacity }}>
-  <video src={video} poster={image} muted loop playsinline preload="metadata" tabindex="-1"></video>
+  <video src={video} poster={image} autoplay muted loop playsinline preload="auto" tabindex="-1"></video>
   <canvas></canvas>
 </div>
 
@@ -57,7 +57,7 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
 
   // Editorial finish: smear length is in viewport heights; grain is in CSS pixels.
   const SMEAR_STRENGTH = 0.07;
-  const SMEAR_SAMPLES = 10; // Integer from 8–12; compiled into the shader loop.
+  const SMEAR_SAMPLES = 8; // Integer from 8–12; compiled into the shader loop.
   const ADVECTION = 0.8;
   const GRAIN_STRENGTH = 0.035;
   const SOFTENING = 0.38;
@@ -289,7 +289,7 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
     } catch {
       return stopPlayback; // Native cover video remains visible without WebGL.
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(1);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     // Signed half-float flow avoids visible quantization as trails fade out.
     if (!renderer.extensions.has("EXT_color_buffer_float")) {
@@ -369,6 +369,7 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
     let ready = false;
     let frame = 0;
     let lastTime = 0;
+    const frameInterval = 1000 / 30;
     const texture = new THREE.VideoTexture(video);
     texture.colorSpace = THREE.SRGBColorSpace;
     uniforms.uTexture.value = texture;
@@ -378,7 +379,7 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
     extraVideo = document.createElement("video");
     extraVideo.muted = true;
     extraVideo.playsInline = true;
-    extraVideo.preload = "auto";
+    extraVideo.preload = "none";
     extraVideo.src = element.dataset.video!;
     extraVideo.setAttribute("aria-hidden", "true");
     extraVideo.style.cssText = "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;";
@@ -396,7 +397,7 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
       if (!motion.matches && !document.hidden) void activeVideo.play().catch(() => {});
     }
     extraVideo.addEventListener("error", useNativeLoop);
-    extraVideo.load();
+    // Load the standby decoder only after the primary video has its first frame.
 
     function updateLoop() {
       if (!seamlessLoopAvailable) return;
@@ -444,6 +445,10 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
     function animate(now: number) {
       frame = 0;
       if (disposed || motion.matches || document.hidden || !ready) return;
+      if (now - lastTime < frameInterval - 1) {
+        frame = requestAnimationFrame(animate);
+        return;
+      }
       const dt = Math.min((now - lastTime) / 1000 || 1 / 60, 0.05);
       lastTime = now;
       updateLoop();
@@ -486,9 +491,12 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
     }
     function resize() {
       const { width, height } = element.getBoundingClientRect();
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      // Bound full-screen shader cost independently of Retina pixel density.
+      renderer.setPixelRatio(Math.min(1, Math.sqrt(900_000 / Math.max(width * height, 1))));
       renderer.setSize(width, height, false);
       uniforms.uViewport.value.set(width, height);
+      pointerWidth = Math.max(width, 1);
+      pointerHeight = Math.max(height, 1);
       const scale = FLOW_RESOLUTION / Math.max(width, height, 1);
       const flowWidth = Math.max(1, Math.round(width * scale));
       const flowHeight = Math.max(1, Math.round(height * scale));
@@ -499,10 +507,11 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
       clearFlow();
       render();
     }
+    let pointerWidth = 1;
+    let pointerHeight = 1;
     function pointer(event: PointerEvent) {
       if (motion.matches) return;
-      const rect = element.getBoundingClientRect();
-      target.set((event.clientX - rect.left) / rect.width, 1 - (event.clientY - rect.top) / rect.height);
+      target.set(event.clientX / pointerWidth, 1 - event.clientY / pointerHeight);
     }
     function contextLost(event: Event) {
       event.preventDefault();
@@ -544,6 +553,10 @@ const { video = "/video/bg-video.mp4", image = "/img/liquid-bg.png", opacity = 1
     function videoReady() {
       if (disposed || !video.videoWidth || video.readyState < 2) return;
       uniforms.uImage.value.set(video.videoWidth, video.videoHeight);
+      if (!ready && extraVideo) {
+        extraVideo.preload = "auto";
+        extraVideo.load();
+      }
       ready = true;
       updateMotion();
       render();

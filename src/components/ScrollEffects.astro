@@ -1,32 +1,19 @@
 <script>
-  import Lenis from "lenis";
-  import "lenis/dist/lenis.css";
-
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  let lenis: Lenis | undefined;
   let observer: IntersectionObserver | undefined;
   const selector = [
     "main > header", ".project-copy", ".project-figure",
     ".project-image-link", ".project-details", ".gallery-navigation", ".contact",
     ".case-info", ".section-copy", ".hero-image", ".mockup-media",
     ".walkthrough video", ".gallery-item", ".gallery-caption",
-    ".project-page > *", "main > img", ".site-footer",
+    "main > img", ".site-footer",
   ].join(", ");
 
   function setup() {
-    lenis?.destroy();
     observer?.disconnect();
     const elements = document.querySelectorAll<HTMLElement>(selector);
     elements.forEach((element) => element.classList.remove("reveal-pending"));
     if (reducedMotion.matches) return;
-
-    lenis = new Lenis({
-      autoRaf: true,
-      duration: 1.1,
-      smoothWheel: true,
-      anchors: true,
-      prevent: (node) => node.classList.contains("gallery-track") || node.classList.contains("project-track"),
-    });
 
     observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -37,6 +24,8 @@
     }, { threshold: 0, rootMargin: "0px 0px -32px 0px" });
 
     elements.forEach((element) => {
+      // Animate a section once, rather than animating its children again.
+      if (element.parentElement?.closest(selector)) return;
       element.classList.add("scroll-reveal", "reveal-pending");
       observer!.observe(element);
     });
@@ -55,7 +44,7 @@
 
 <style is:global>
   html { scroll-padding-top: calc(var(--site-header-height, 72px) + 24px); }
-  html:not(.lenis) { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; }
   .scroll-reveal {
     transition: opacity 700ms ease, translate 850ms cubic-bezier(.22, 1, .36, 1);
   }

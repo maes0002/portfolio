@@ -119,7 +119,7 @@ const projects: PersonalProject[] = [
                   </div>
                 ) : <div class="project-gallery single-media-gallery">
                 <Media {...mediaProps} class:list={["project-media", { "video-media": image.video }]}>
-                  {image.video ? <video src={image.src} autoplay muted loop controls playsinline preload="metadata" aria-label={image.alt}></video> : image.src ? <img src={image.src} alt={image.alt} loading="lazy" /> : <div class="image-placeholder" role="img" aria-label={`Image placeholder for personal project ${project.number}`}></div>}
+                  {image.video ? <video src={image.src} data-viewport-video muted loop controls playsinline preload="metadata" aria-label={image.alt}></video> : image.src ? <img src={image.src} alt={image.alt} loading="lazy" /> : <div class="image-placeholder" role="img" aria-label={`Image placeholder for personal project ${project.number}`}></div>}
                 </Media>
                 </div>}
               </figure>

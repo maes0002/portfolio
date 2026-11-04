@@ -3,6 +3,7 @@ import "../styles/tailwind.css";
 import LiquidBackground from "../components/LiquidBackground.astro";
 import Cursor from "../components/Cursor.astro";
 import ScrollEffects from "../components/ScrollEffects.astro";
+import ViewportVideos from "../components/ViewportVideos.astro";
 const { title, liquidBackground = true, liquidOpacity = 0.15 } = Astro.props;
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -25,6 +26,7 @@ import Footer from "../components/Footer.astro";
     <Footer />
     <Cursor />
     <ScrollEffects />
+    <ViewportVideos />
   </body>
 </html>
 
