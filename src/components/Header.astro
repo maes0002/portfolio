@@ -25,10 +25,7 @@ const isHome = Astro.url.pathname === "/";
   <nav id="main-navigation" aria-label="Main navigation">
     <Link href="/school-projects"><Localized en="SCHOOL PROJECTS" /></Link>
     <Link href="/personal-projects"><Localized en="PERSONAL PROJECTS" /></Link>
-    <span class="resume-link">
-      <Link href="/resume" aria-describedby="resume-hint"><Localized en="RESUMÉ" /></Link>
-      <span id="resume-hint" class="resume-hint"><Localized en="View CV ↗" da="Se CV ↗" /></span>
-    </span>
+    <Link href="/resume"><Localized en="RESUMÉ" /></Link>
     <div class="mobile-contact"><Link href="mailto:majaestrup@gmail.com"><Localized en="CONTACT ME" da="KONTAKT MIG" /></Link></div>
     <div class="desktop-language"><LanguageSwitch /></div>
   </nav>
@@ -121,43 +118,8 @@ const isHome = Astro.url.pathname === "/";
     white-space: nowrap;
   }
 
-  .resume-link {
-    position: relative;
-  }
-  .resume-hint {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 50%;
-    transform: translate(-50%, -4px);
-    padding: 6px 9px;
-    border: 1px solid rgb(0 0 0 / 15%);
-    border-radius: 3px;
-    background: rgb(252 252 252 / 92%);
-    font-family: "Geist Mono", monospace;
-    font-size: 11px;
-    font-weight: 400;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
-  }
-  .resume-link:is(:hover, :focus-within) .resume-hint {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, 0);
-  }
-  @media (hover: none) {
-    .resume-hint {
-      opacity: 1;
-      visibility: visible;
-      transform: translate(-50%, 0);
-    }
-  }
   @media (prefers-reduced-motion: reduce) {
     .site-header { transition: none; }
-    .resume-hint {
-      transition: none;
-    }
   }
 
   @media (max-width: 760px) {
@@ -192,11 +154,6 @@ const isHome = Astro.url.pathname === "/";
     .menu-open .burger-lines span:last-child { transform: translateY(-8px) rotate(-45deg); }
     nav { display: none; grid-column: 1 / -1; width: 100%; flex-direction: column; align-items: flex-end; gap: 22px; padding: 24px 0 8px; }
     .menu-open nav { display: flex; }
-    .resume-hint { left: auto; right: 0; transform: translateY(-4px); }
-    .resume-link:is(:hover, :focus-within) .resume-hint { transform: translateY(0); }
-    .resume-hint { font-size: 12px; }
-    .resume-link .resume-hint { position: static; display: block; opacity: .6; visibility: visible; transform: none; padding: 6px 0 0; background: transparent; border: 0; text-align: right; }
-    .resume-link:is(:hover, :focus-within) .resume-hint { transform: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .burger-lines span { transition: none; }
